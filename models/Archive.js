@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const NoteSchema = new mongoose.Schema(
+const ArchiveSchema = new mongoose.Schema(
   {
     username: {
       type: String,
@@ -17,6 +17,8 @@ const NoteSchema = new mongoose.Schema(
     },
     picture: {
       type: String,
+      // default: "https://i.pinimg.com/564x/33/f4/d8/33f4d8c6de4d69b21652512cbc30bb05.jpg",
+      // ref: "User",
       required: false,
     },
     drawing: {
@@ -43,8 +45,12 @@ const NoteSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    // newId: {
+    //   type: String,
+    //   required: false,
+    // },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Note", NoteSchema);
+module.exports = mongoose.model("Archive", ArchiveSchema);

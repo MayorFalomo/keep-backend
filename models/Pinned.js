@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const NoteSchema = new mongoose.Schema(
+const PinnedSchema = new mongoose.Schema(
   {
     username: {
       type: String,
@@ -43,8 +43,12 @@ const NoteSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    // newId: {
+    //   type: String,
+    //   required: false,
+    // },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Note", NoteSchema);
+module.exports = mongoose.model("Pinned", PinnedSchema);
