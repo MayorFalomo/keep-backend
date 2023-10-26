@@ -15,7 +15,8 @@ router.post("/", async (req:any, res:any) => {
 });
 
 //Update a note
-router.put("/:id", async (req:any, res) => {
+router.put("/:id", async (req: any, res: any) => {
+    //basically we're running an if check before updating the note, to check if it's the actual user
     if (req.body._id == req.params.id) {
         try {            
             const updatedUser = await Note.findByIdAndUpdate(
