@@ -10,11 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const router = require('express').Router();
-const Pinned = require('../models/Pinned');
-router.post('/add-pinned', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let pinned;
+const Archived = require('../models/Archive');
+router.post('/add-archived', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let archived;
     try {
-        pinned = new Pinned({
+        archived = new Archived({
             title: req.body.title,
             note: req.body.tweet,
             picture: req.body.picture,
@@ -28,43 +28,43 @@ router.post('/add-pinned', (req, res) => __awaiter(void 0, void 0, void 0, funct
             userId: req.body.userId,
             saved: true,
         });
-        yield pinned.save();
+        yield archived.save();
     }
     catch (err) {
         console.log(err);
     }
-    if (!pinned) {
-        return res.status(404).json({ message: "Couldn't add Pinned" });
+    if (!archived) {
+        return res.status(404).json({ message: "Couldn't add to Archive" });
     }
-    return res.status(200).json({ message: "Note pinned successfully" });
+    return res.status(200).json({ message: "Note Archived successfully" });
 }));
-router.get('/get-pinned/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/get-archived/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.id;
-    let pinned;
+    let archived;
     try {
-        pinned = yield Pinned.find({ userDetail: userId });
+        archived = yield Archived.find({ userDetail: userId });
     }
     catch (err) {
-        return res.status(404).json({ message: "Unable to find Pinned Notes" });
+        return res.status(404).json({ message: "Unable to find archived Notes" });
     }
-    if (!pinned) {
-        return res.status(404).json({ message: "Can't get this Pinned Notes" });
+    if (!archived) {
+        return res.status(404).json({ message: "Can't get this Archive Notes" });
     }
-    return res.status(200).json(pinned);
+    return res.status(200).json(archived);
 }));
 //Remove a Pinined Note
-router.delete('/remove-pinned/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let pinnedId = req.params.id;
+router.delete('/remove-archived/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let noteId = req.params.id;
     let note;
     try {
-        note = yield Note.findOneAndRemove({ pinnedId: pinnedId });
+        note = yield Note.findOneAndRemove({ noteId: noteId });
     }
     catch (err) {
         console.log(err);
     }
     if (!note) {
-        return res.status(404).json({ message: "Cannot remove Pinned Note" });
+        return res.status(404).json({ message: "Cannot remove Archived Note" });
     }
-    return res.status(200).json({ message: "Pinned Note removed successfully" });
+    return res.status(200).json({ message: "Archived note removed successfully" });
 }));
 module.exports = router; // Export the router instance

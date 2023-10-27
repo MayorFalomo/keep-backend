@@ -1,4 +1,6 @@
-const pinnedRouter = require('express').Router();
+import { Router } from "express";
+
+const router:Router = require('express').Router();
 const Pinned = require('../models/Pinned');
 
 
@@ -30,7 +32,7 @@ router.post('/add-pinned', async (req:any, res:any) => {
 })
 
 
-router.get('/get-pinned/:id', async (req:any, res:any, next:any) => {
+router.get('/get-pinned/:id', async (req:any, res:any, next) => {
     const userId = req.params.id;
     let pinned;
     try {
@@ -46,15 +48,17 @@ router.get('/get-pinned/:id', async (req:any, res:any, next:any) => {
 
 //Remove a Pinined Note
 router.delete('/remove-pinned/:id', async (req, res, next) => {
-    let noteId = req.params.id;
+    let pinnedId = req.params.id;
     let note;
     try {
-        note = await Note.findOneAndRemove({noteId: noteId});
+        note = await Note.findOneAndRemove({pinnedId: pinnedId});
     } catch (err) {
         console.log(err);
     }
     if (!note) {
-        return res.status(404).json({message: "Can't delete this Bookmark"})
+        return res.status(404).json({message: "Cannot remove Pinned Note"})
     }
-    return res.status(200).json({message: "Successfully Deleted Bookmark"})
+    return res.status(200).json({message: "Pinned Note removed successfully"})
 })
+
+module.exports = router; // Export the router instance

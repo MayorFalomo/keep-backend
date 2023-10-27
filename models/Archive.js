@@ -44,6 +44,10 @@ const ArchiveSchema = new mongoose_1.default.Schema({
         type: String,
         required: false,
     },
+    archivedId: {
+        type: String,
+        required: false,
+    },
     label: {
         type: String,
         required: false,

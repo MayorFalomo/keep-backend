@@ -8,6 +8,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const cors_1 = __importDefault(require("cors"));
 const noteRoutes = require('./routes/notes');
+const pinnedRoutes = require('./routes/pinned');
 // For the .env file
 dotenv_1.default.config({ path: './vars/.env' });
 const app = (0, express_1.default)();
@@ -29,6 +30,7 @@ mongoose_1.default
     console.log(err);
 });
 app.use("/api/notes", noteRoutes);
+app.use("/api/notes", pinnedRoutes);
 app.listen(port, () => {
     console.log(`Server is firing at http://localhost:${port}`);
     // console.log(process.env.MONGODB_URL);

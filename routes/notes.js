@@ -39,4 +39,13 @@ router.put("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(400).json({ message: "userId does not match" });
     }
 }));
+router.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const note = yield Note.findById(req.params.id);
+        res.status(200).json(note);
+    }
+    catch (err) {
+        res.status(500).json(err);
+    }
+}));
 module.exports = router; // Export the router instance

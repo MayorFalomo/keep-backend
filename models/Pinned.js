@@ -41,7 +41,7 @@ const PinnedSchema = new mongoose_1.default.Schema({
         type: String,
         required: false,
     },
-    noteId: {
+    pinnedId: {
         type: String,
         required: false,
     },
