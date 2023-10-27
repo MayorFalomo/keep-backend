@@ -38,6 +38,10 @@ const PinnedSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    noteId: {
+      type: String,
+      required: false,
+    },
     userId: {
       type: String,
       required: false,

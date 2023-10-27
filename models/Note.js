@@ -46,5 +46,9 @@ const NoteSchema = new mongoose_1.default.Schema({
         type: String,
         required: false,
     },
+    userId: {
+        type: String,
+        required: false,
+    }
 }, { timestamps: true });
 module.exports = mongoose_1.default.model("Note", NoteSchema);

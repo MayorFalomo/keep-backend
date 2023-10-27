@@ -41,9 +41,13 @@ const PinnedSchema = new mongoose_1.default.Schema({
         type: String,
         required: false,
     },
-    // newId: {
-    //   type: String,
-    //   required: false,
-    // },
+    noteId: {
+        type: String,
+        required: false,
+    },
+    userId: {
+        type: String,
+        required: false,
+    },
 }, { timestamps: true });
 module.exports = mongoose_1.default.model("Pinned", PinnedSchema);

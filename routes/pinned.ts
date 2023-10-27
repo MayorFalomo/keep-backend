@@ -43,3 +43,18 @@ router.get('/get-pinned/:id', async (req:any, res:any, next:any) => {
     }
     return res.status(200).json(pinned)
 })
+
+//Remove a Pinined Note
+router.delete('/remove-pinned/:id', async (req, res, next) => {
+    let noteId = req.params.id;
+    let note;
+    try {
+        note = await Note.findOneAndRemove({noteId: noteId});
+    } catch (err) {
+        console.log(err);
+    }
+    if (!note) {
+        return res.status(404).json({message: "Can't delete this Bookmark"})
+    }
+    return res.status(200).json({message: "Successfully Deleted Bookmark"})
+})

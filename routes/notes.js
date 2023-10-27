@@ -24,6 +24,7 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 }));
 //Update a note
 router.put("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //basically we're running an if check before updating the note, to check if it's the actual user
     if (req.body._id == req.params.id) {
         try {
             const updatedUser = yield Note.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true } //When this line is added whatever you update shows immediately in postman
