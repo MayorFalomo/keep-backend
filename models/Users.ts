@@ -4,11 +4,15 @@ const UserSchema = new mongoose.Schema(
   {
     _id: {
       type: String,
-      required: true,
+      required: false,
+    },
+    userId: {
+      type: String,
+      required: false,
     },
     username: {
       type: String,
-      required: true,
+      required: false,
       unique: false,
     },
     profilePic: {
@@ -25,20 +29,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    notifications: {
-      type: [],
-      require: false,
-    },
-    location: {
-      type: String,
-      required: true,
-      default: "Lagos, Nigeria",
-    },
-    birthday: {
+    notification: {
       type: String,
       required: false,
-      default: "April, 19th, 2023",
-    },
+    }
   },
   { timestamps: true }
 );

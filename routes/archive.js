@@ -53,7 +53,7 @@ router.get('/get-archived/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
     return res.status(200).json(archived);
 }));
 //Remove a Pinined Note
-router.delete('/remove-archived/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete('/remove-archived/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let noteId = req.params.id;
     let note;
     try {

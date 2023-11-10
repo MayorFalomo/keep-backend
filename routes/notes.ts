@@ -3,7 +3,7 @@ const Note = require("../models/Note");
 const User = require("../models/Users");
 
 // Creating a Note
-router.post("/", async (req:any, res:any) => {
+router.post("/create-note", async (req:any, res:any) => {
     const newNote = new Note(req.body);
     try {
         const savedNote = await newNote.save();
@@ -31,6 +31,38 @@ router.put("/:id", async (req: any, res: any) => {
     } else {
         res.status(400).json({ message: "userId does not match" });
     }
+});
+
+// router.get(`/get-notes/:id`, async (req:any, res:any) => {
+//   const id = req.params.userId;
+//   let notes;
+//   try {
+//     notes = await Note.find({ id })
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+
+//   if (!notes) {
+//     return res.status(404).json({ message: "No posts found" });
+//   }
+
+//   return res.status(200).json({ notes });
+// });
+
+router.get(`/get-notes/:id`, async (req:any, res:any) => {
+ const id = req.params.userId;
+ let notes;
+ try {
+   notes = await Note.find({ id }).sort({ createdAt: -1 });
+ } catch (err) {
+   res.status(500).json(err);
+ }
+
+ if (!notes) {
+   return res.status(404).json({ message: "No posts found" });
+ }
+
+ return res.status(200).json({ notes });
 });
 
 router.get("/:id", async (req:any, res:any) => {

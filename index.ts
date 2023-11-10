@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 const noteRoutes = require('./routes/notes')
 const pinnedRoutes = require('./routes/pinned')
+const archivedRoutes = require('./routes/archive')
+const userRoutes = require('./routes/users')
 
 // For the .env file
 dotenv.config({ path: './vars/.env' });
@@ -31,6 +33,8 @@ mongoose
 
 app.use("/api/notes", noteRoutes)
   app.use("/api/notes", pinnedRoutes)
+  app.use("/api/notes", archivedRoutes)
+  app.use("/api/users", userRoutes)
 
 app.listen(port, () => {
   console.log(`Server is firing at http://localhost:${port}`);

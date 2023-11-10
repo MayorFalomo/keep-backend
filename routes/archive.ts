@@ -1,5 +1,4 @@
 import { Router } from "express";
-
 const router = require('express').Router();
 const Archived = require('../models/Archive');
 
@@ -31,7 +30,6 @@ router.post('/add-archived', async (req:any, res:any) => {
     return res.status(200).json({message: "Note Archived successfully"})
 })
 
-
 router.get('/get-archived/:id', async (req:any, res:any) => {
     const userId = req.params.id;
     let archived;
@@ -46,8 +44,9 @@ router.get('/get-archived/:id', async (req:any, res:any) => {
     return res.status(200).json(archived)
 })
 
+
 //Remove a Pinined Note
-router.delete('/remove-archived/:id', async (req:any, res:any, next) => {
+router.delete('/remove-archived/:id', async (req:any, res:any) => {
     let noteId = req.params.id;
     let note;
     try {

@@ -49,5 +49,10 @@ const PinnedSchema = new mongoose_1.default.Schema({
         type: String,
         required: false,
     },
+    pinned: {
+        type: Boolean,
+        required: false,
+        default: true,
+    }
 }, { timestamps: true });
 module.exports = mongoose_1.default.model("Pinned", PinnedSchema);

@@ -2,11 +2,18 @@ import mongoose from "mongoose";
 
 const NoteSchema = new mongoose.Schema(
   {
-    // username: {
-    //   type: String,
-    //   required: true,
-    //   unique: true,
-    // },
+    username: {
+      type: String,
+      required: false,
+    },
+    id: {
+      type: String,
+      required: false,
+    },
+    userId: {
+      type: String,
+      required: true,
+    },
     title: {
       type: String,
       required: false,
@@ -43,10 +50,6 @@ const NoteSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    userId: {
-      type: String,
-      required: false,
-    }
   },
   { timestamps: true }
 );
