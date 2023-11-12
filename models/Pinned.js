@@ -5,6 +5,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const PinnedSchema = new mongoose_1.default.Schema({
+    _id: {
+        type: String,
+        required: false,
+    },
+    username: {
+        type: String,
+        required: false,
+    },
     title: {
         type: String,
         required: false,

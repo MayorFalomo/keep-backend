@@ -2,6 +2,14 @@ import mongoose from "mongoose";
 
 const PinnedSchema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      required: false,
+    },
+    username: {
+      type: String,
+      required: false,
+    },
     title: {
       type: String,
       required: false,

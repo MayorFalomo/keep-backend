@@ -3,13 +3,14 @@ import { Router } from "express";
 const router:Router = require('express').Router();
 const Pinned = require('../models/Pinned');
 
-
 router.post('/add-pinned', async (req:any, res:any) => {
     let pinned;
     try {
         pinned = new Pinned({
+            _id: req.body._id,
+            pinnedId: req.params.pinnedId,
             title: req.body.title,
-            note: req.body.tweet,
+            note: req.body.note,
             picture: req.body.picture,
             drawing: req.body.drawing,
             bgImage: req.body.bgImage,
@@ -31,12 +32,11 @@ router.post('/add-pinned', async (req:any, res:any) => {
     return res.status(200).json({message: "Note pinned successfully"})
 })
 
-
-router.get('/get-pinned/:id', async (req:any, res:any, next) => {
+router.get('/getall-pinned-notes/:id', async (req: any, res: any, next) => {
     const userId = req.params.id;
     let pinned;
     try {
-        pinned = await Pinned.find({ userDetail: userId });
+        pinned = await Pinned.find({ userId: userId });
     } catch (err) {
         return res.status(404).json({ message: "Unable to find Pinned Notes" })
     }
@@ -44,14 +44,29 @@ router.get('/get-pinned/:id', async (req:any, res:any, next) => {
         return res.status(404).json({ message: "Can't get this Pinned Notes" })
     }
     return res.status(200).json(pinned)
-})
+});
 
-//Remove a Pinined Note
+
+router.get('/get-pinned/:id', async (req: any, res: any, next) => {
+    const id = req.params.id;
+    let pinned;
+    try {
+        pinned = await Pinned.findOne({ _id: id });
+    } catch (err) {
+        return res.status(404).json({ message: "Unable to find Pinned Notes" })
+    }
+    if (!pinned) {
+        return res.status(404).json({ message: "Can't get this Pinned Notes" })
+    }
+    return res.status(200).json(pinned)
+});
+
+//Remove a Pinned Note
 router.delete('/remove-pinned/:id', async (req, res, next) => {
-    let pinnedId = req.params.id;
+    let id = req.params.id;
     let note;
     try {
-        note = await Note.findOneAndRemove({pinnedId: pinnedId});
+        note = await Pinned.findOneAndRemove({_id: id});
     } catch (err) {
         console.log(err);
     }
