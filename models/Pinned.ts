@@ -14,10 +14,12 @@ const PinnedSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    note: {
-      type: String,
-      required: false,
-    },
+    note: [
+      {
+        type: mongoose.Schema.Types.ObjectId, ref: "Note"
+      }
+    ]
+    ,
     picture: {
       type: String,
       required: false,

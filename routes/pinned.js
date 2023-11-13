@@ -16,7 +16,7 @@ router.post('/add-pinned', (req, res) => __awaiter(void 0, void 0, void 0, funct
     try {
         pinned = new Pinned({
             _id: req.body._id,
-            pinnedId: req.params.pinnedId,
+            pinnedId: req.body.pinnedId,
             title: req.body.title,
             note: req.body.note,
             picture: req.body.picture,
