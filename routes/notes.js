@@ -42,6 +42,7 @@ router.put("/update-note/:id", (req, res) => __awaiter(void 0, void 0, void 0, f
         res.status(400).json({ message: "userId does not match" });
     }
 }));
+//Route to get a single note
 router.get('/get-note/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     let note;
@@ -72,7 +73,7 @@ router.get(`/:id`, (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     return res.status(200).json({ notes });
 }));
 //get all notes for a singleUser by their userId
-router.get(`/get-all-notes/:id`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get(`/getall-notes/:id`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.userId;
     let notes;
     try {

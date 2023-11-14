@@ -4,36 +4,6 @@ const router:Router = require('express').Router();
 const Pinned = require('../models/Pinned');
 const Note = require('../models/Note');
 
-// router.post('/add-pinned', async (req:any, res:any) => {
-//     let pinned;
-//     try {
-//         pinned = new Pinned({
-//             _id: req.body._id,
-//             pinnedId: req.body.pinnedId,
-//             title: req.body.title,
-//             note: req.body.note,
-//             picture: req.body.picture,
-//             drawing: req.body.drawing,
-//             bgImage: req.body.bgImage,
-//             bgColor: req.body.bgColor,
-//             remainder: req.body.remainder,
-//             collaborator: req.body.collaborator,
-//             label: req.body.label,
-//             createdAt: req.body.createdAt,
-//             userId: req.body.userId, //This would be the users id
-//             saved: true,
-//         })
-//         await pinned.save()
-//         console.log(pinned);
-//     } catch (err) {
-//         console.log(err);
-//     }
-//     if (!pinned) {
-//         return res.status(404).json({message: "Couldn't add Pinned"})
-//     }
-//     return res.status(200).json({message: "Note pinned successfully"})
-// })
-
 router.post('/add-pinned', async (req: any, res: any) => {
     try {
         const { _id } = req.body;
@@ -58,7 +28,6 @@ router.post('/add-pinned', async (req: any, res: any) => {
             userId: existingNote.userId,
             saved: true,
         })
-        // Save the pinned note to the database
         await pinned.save();
         console.log(pinned);
         return res.status(200).json({ message: "Note pinned successfully" });
@@ -68,28 +37,38 @@ router.post('/add-pinned', async (req: any, res: any) => {
     }
 });
 
-
-
-router.post('/pin-note/:id', async (req, res) => {
-    const id = req.params.id;
-    try {
-        // Create a new Pinned Note and associate it with the Note _id
-        const pinnedNote = await Pinned.create({ _id: id });
-        console.log(pinnedNote);
-        // Send the created Pinned Note as the response
-        res.status(201).json(pinnedNote);
-    } catch (err) {
-        // Handle errors, e.g., validation errors or database connection issues
-        console.error(err);
-        res.status(500).json({ message: "Internal Server Error" });
+//Update a note
+router.put("/update-note/:id", async (req: any, res: any) => {
+    //basically we're running an if check before updating the note, to check if it's the actual user
+  // console.log(req.body._id, "This is _Id");
+  // console.log( req.params.id, "This is Req and params ");
+  if (req.body._id == req.params.id) {
+        try {            
+            const updatedNote = await Note.findByIdAndUpdate(
+                req.params.id,
+                { $set: req.body },
+                { new: true } //When this line is added whatever you update shows immediately in postman
+            );
+          res.status(200).json(updatedNote);
+          console.log("Updated Note successfully");
+          
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    } else {
+        res.status(400).json({ message: "userId does not match" });
     }
 });
 
+//Route to get all the pinned notes of a singleUser
 router.get('/getall-pinned-notes/:id', async (req: any, res: any, next) => {
     const userId = req.params.id;
+    
     let pinned;
     try {
         pinned = await Pinned.find({ userId: userId });
+        console.log(pinned);
+        
     } catch (err) {
         return res.status(404).json({ message: "Unable to find Pinned Notes" })
     }
@@ -99,8 +78,8 @@ router.get('/getall-pinned-notes/:id', async (req: any, res: any, next) => {
     return res.status(200).json(pinned)
 });
 
-router.get('/note-id/:id', async (req: any, res: any, next) => {
-    const id = req.params.id;
+router.get('/pinned-id/:id', async (req: any, res: any, next) => {
+    const id = req.params.id
 
     try {
         const pinned = await Pinned.findOne({ _id: id }).populate('note').exec();
@@ -109,10 +88,10 @@ router.get('/note-id/:id', async (req: any, res: any, next) => {
             return res.status(404).json({ message: "Unable to find Pinned Notes" });
         }
         // Access pinned.notes to get the populated 'Note' documents
-        console.log(pinned.note);
+        // console.log(pinned.note);
 
         // Send the populated pinned document as the response
-        // res.status(200).json(pinned);
+        res.status(200).json(pinned);
     } catch (err) {
         // Handle other errors, e.g., database connection issues
         console.error(err);

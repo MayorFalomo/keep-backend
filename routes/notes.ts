@@ -37,6 +37,7 @@ router.put("/update-note/:id", async (req: any, res: any) => {
     }
 });
 
+//Route to get a single note
 router.get('/get-note/:id', async (req: any, res: any) => {
     const id = req.params.id;
     let note;
@@ -70,7 +71,7 @@ router.get(`/:id`, async (req:any, res:any) => {
 
 
 //get all notes for a singleUser by their userId
-router.get(`/get-all-notes/:id`, async (req:any, res:any) => {
+router.get(`/getall-notes/:id`, async (req:any, res:any) => {
  const id = req.params.userId;
  let notes;
  try {
