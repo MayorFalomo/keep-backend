@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const PinnedSchema = new mongoose_1.default.Schema({
     _id: {
-        type: String,
-        required: false,
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "Note"
     },
     username: {
         type: String,
@@ -17,11 +17,10 @@ const PinnedSchema = new mongoose_1.default.Schema({
         type: String,
         required: false,
     },
-    note: [
-        {
-            type: mongoose_1.default.Schema.Types.ObjectId, ref: "Note"
-        }
-    ],
+    note: {
+        type: String,
+        required: false,
+    },
     picture: {
         type: String,
         required: false,
@@ -63,5 +62,8 @@ const PinnedSchema = new mongoose_1.default.Schema({
         required: false,
         default: true,
     }
-}, { timestamps: true });
-module.exports = mongoose_1.default.model("Pinned", PinnedSchema);
+}, {
+    timestamps: true,
+    collection: "pins"
+});
+module.exports = mongoose_1.default.model("Pinned", PinnedSchema, "pins");

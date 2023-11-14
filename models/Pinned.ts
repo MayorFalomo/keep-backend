@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 const PinnedSchema = new mongoose.Schema(
   {
     _id: {
-      type: String,
-      required: false,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Note"
     },
     username: {
       type: String,
@@ -14,12 +14,10 @@ const PinnedSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    note: [
-      {
-        type: mongoose.Schema.Types.ObjectId, ref: "Note"
-      }
-    ]
-    ,
+    note: {
+      type: String,
+      required: false,
+      },
     picture: {
       type: String,
       required: false,
@@ -62,7 +60,10 @@ const PinnedSchema = new mongoose.Schema(
       default: true,
     }
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    collection: "pins"
+  }
 );
 
-module.exports = mongoose.model("Pinned", PinnedSchema);
+module.exports = mongoose.model("Pinned", PinnedSchema, "pins");
