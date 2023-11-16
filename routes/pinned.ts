@@ -67,7 +67,7 @@ router.get('/getall-pinned-notes/:id', async (req: any, res: any, next) => {
     let pinned;
     try {
         pinned = await Pinned.find({ userId: userId });
-        console.log(pinned);
+        // console.log(pinned);
         
     } catch (err) {
         return res.status(404).json({ message: "Unable to find Pinned Notes" })
