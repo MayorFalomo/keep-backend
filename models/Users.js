@@ -32,7 +32,7 @@ const UserSchema = new mongoose_1.default.Schema({
         required: true,
     },
     notification: {
-        type: String,
+        type: Array,
         required: false,
     }
 }, { timestamps: true });

@@ -30,7 +30,7 @@ const UserSchema = new mongoose.Schema(
       required: true,
     },
     notification: {
-      type: String,
+      type: Array,
       required: false,
     }
   },
