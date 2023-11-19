@@ -86,6 +86,60 @@ router.get(`/getall-notes/:userId`, (req, res) => __awaiter(void 0, void 0, void
     }
     return res.status(200).json({ notes });
 }));
+router.post('/set-notification/later-today', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { _id, userId, username, title, note, picture, bgColor, bgImage, drawing, label, collaborator, createdAt } = req.body;
+    try {
+        // Calculating the time until 8 AM tomorrow
+        const now = new Date();
+        const targetTime = new Date(now);
+        targetTime.setHours(20, 0, 0, 0); // Set time to 8 AM tomorrow
+        // If the current time is after 8 AM, schedule it for 8 AM tomorrow
+        if (now > targetTime) {
+            targetTime.setDate(now.getDate() + 1);
+        }
+        const timeUntil8AM = targetTime.getTime() - now.getTime();
+        console.log(timeUntil8AM);
+        // The notification message
+        const notificationMessage = 'You have a notification';
+        // The notification object with the message and userDetails
+        const notification = {
+            message: notificationMessage,
+            _id,
+            userId,
+            username,
+            title,
+            note,
+            picture,
+            bgColor,
+            bgImage,
+            drawing,
+            label,
+            collaborator,
+            createdAt,
+        };
+        //setTimeOut to run the function at 8am
+        setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                // Find the user and push the notification object into their notifications array
+                const user = yield User.findOneAndUpdate({ _id: userId }, { $push: { notifications: notification } }, { new: true } // To get the updated user document
+                );
+                // console.log(user);
+                console.log('Notification sent:', notification);
+                if (!user) {
+                    return res.status(404).json({ message: "Notification with the provided ID already exists" });
+                }
+            }
+            catch (error) {
+                console.error('Error sending notification:', error);
+            }
+        }), timeUntil8AM);
+        return res.status(200).json({ message: 'Notification scheduled successfully' });
+    }
+    catch (err) {
+        console.error('Error scheduling notification:', err);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+}));
 router.post('/set-notification/tomorrow', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { _id, userId, username, title, note, picture, bgColor, bgImage, drawing, label, collaborator, createdAt } = req.body;
     try {
