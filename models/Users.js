@@ -31,9 +31,9 @@ const UserSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
-    notification: {
+    notifications: {
         type: Array,
-        required: false,
+        required: true,
     }
 }, { timestamps: true });
 module.exports = mongoose_1.default.model("User", UserSchema);

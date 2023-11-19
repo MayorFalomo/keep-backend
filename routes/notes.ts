@@ -27,7 +27,7 @@ router.put("/update-note/:id", async (req: any, res: any) => {
                 { new: true } //When this line is added whatever you update shows immediately in postman
             );
           res.status(200).json(updatedNote);
-          console.log("Updated Note successfully");
+          // console.log("Updated Note successfully");
           
         } catch (err) {
             res.status(500).json(err);
@@ -53,29 +53,28 @@ router.get('/get-note/:id', async (req: any, res: any) => {
 });
 
 //Route to get all the note of a single user by userId
-router.get(`/:id`, async (req:any, res:any) => {
-  const userId = req.params.userId;
-  let notes;
-  try {
-    notes = await Note.find({ userId })
-  } catch (err) {
-    res.status(500).json(err);
-  }
+// router.get(`/:id`, async (req:any, res:any) => {
+//   const userId = req.params.userId;
+//   let notes;
+//   try {
+//     notes = await Note.find({ userId })
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+//   if (!notes) {
+//     return res.status(404).json({ message: "No posts found" });
+//   }
 
-  if (!notes) {
-    return res.status(404).json({ message: "No posts found" });
-  }
-
-  return res.status(200).json({ notes });
-});
+//   return res.status(200).json(notes);
+// });
 
 
 //get all notes for a singleUser by their userId
-router.get(`/getall-notes/:id`, async (req:any, res:any) => {
- const id = req.params.userId;
+router.get(`/getall-notes/:userId`, async (req:any, res:any) => {
+ const userId = req.params.userId;
  let notes;
  try {
-   notes = await Note.find({ id }).sort({ createdAt: -1 });
+   notes = await Note.find({ userId }).sort({ createdAt: -1 });
  } catch (err) {
    res.status(500).json(err);
  }
@@ -87,55 +86,175 @@ router.get(`/getall-notes/:id`, async (req:any, res:any) => {
  return res.status(200).json({ notes });
 });
 
-router.post("/set-notification", async (req:any, res:any) => {
-  // const postId = req.body._id;
-  let remainder;
-  let user;
 
-  const noteDetails = {
-    _id: req.body._id,
-    userId: req.body.userId,//This is the important bit
-    username: req.body.username, 
-    title: req.body.title,
-    note: req.body.note,
-    picture: req.body.picture,
-    bgColor: req.body.bgColor,
-    bgImage: req.body.bgImage,
-    drawing: req.body.drawing,
-    label: req.body.label,
-    collaborator: req.body.collaborator,
-    createdAt: req.body.createdAt, // Add the createdAt timestamp
-  };
+router.post('/set-notification/tomorrow', async (req:any, res:any) => {
+  const { _id, userId, username, title, note, picture, bgColor, bgImage, drawing, label, collaborator, createdAt } = req.body;
+
   try {
-    remainder = await User.findByIdAndUpdate(
-      {
-        userId: req.body.userId,
-      },
-      {
-        $push: { notification: noteDetails },
-      }
-    );
+   // Calculating the time until 8 AM tomorrow
+    const now = new Date();
+    const targetTime = new Date(now);
+    targetTime.setHours(8, 0, 0, 0); // Set time to 8 AM tomorrow
+
+    // If the current time is after 8 AM, schedule it for 8 AM tomorrow
+    if (now > targetTime) {
+      targetTime.setDate(now.getDate() + 1);
+    }
+
+    const timeUntil8AM = targetTime.getTime() - now.getTime();
+    console.log(timeUntil8AM);
+    
     // The notification message
-    const notificationMessage = "You have notification";
+    const notificationMessage = 'You have a notification';
+
     // The notification object with the message and userDetails
     const notification = {
       message: notificationMessage,
-      ...noteDetails,
+      _id,
+      userId,
+      username,
+      title,
+      note,
+      picture,
+      bgColor,
+      bgImage,
+      drawing,
+      label,
+      collaborator,
+      createdAt,
     };
-    // Find the user whose post was liked and push the notification object into their notifications array
-    user = await User.findOneAndUpdate(
-      { userId: noteDetails.userId },
-      { $push: { notifications: notification } }
-    );
+    //setTimeOut to run the function at 8am
+    setTimeout(async () => {
+      try {
+        // Find the user and push the notification object into their notifications array
+        const user = await User.findOneAndUpdate(
+          { _id: userId },
+          { $push: { notifications: notification } },
+          { new: true } // To get the updated user document
+        );
+        // console.log(user);
+        
+
+        console.log('Notification sent:', notification);
+      } catch (error) {
+        console.error('Error sending notification:', error);
+      }
+    }, timeUntil8AM);
+
+    return res.status(200).json({ message: 'Notification scheduled successfully' });
+
   } catch (err) {
-    console.log(err);
+    console.error('Error scheduling notification:', err);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
-  if (!remainder) {
-    return res.status(404).json({ message: "Can't set Remainder" });
-  }
-  console.log(remainder);
-  return res.status(200).json({ message: "Successfully set Remainder" });
 });
+
+
+router.post('/set-notification/next-week', async (req:any, res:any) => {
+  const { _id, userId, username, title, note, picture, bgColor, bgImage, drawing, label, collaborator, createdAt } = req.body;
+
+  try {
+    // Calculating the time until next monday tomorrow
+    const now = new Date();
+    const daysUntilNextMonday = ((1 - now.getDay() + 7) % 7) + 1;
+    const targetTime = new Date(now);
+    targetTime.setDate(now.getDate() + daysUntilNextMonday);
+    targetTime.setHours(8, 0, 0, 0); // Set time to 8 AM next Monday
+
+    const timeUntilNextMonday8AM = targetTime.getTime() - now.getTime();
+    console.log(timeUntilNextMonday8AM);
+    
+    // The notification message
+    const notificationMessage = 'You have a notification';
+
+    // The notification object with the message and userDetails
+    const notification = {
+      message: notificationMessage,
+      _id,
+      userId,
+      username,
+      title,
+      note,
+      picture,
+      bgColor,
+      bgImage,
+      drawing,
+      label,
+      collaborator,
+      createdAt,
+    };
+    //setTimeOut to run the function at 8am
+    setTimeout(async () => {
+      try {
+        // Find the user and push the notification object into their notifications array
+        const user = await User.findOneAndUpdate(
+          { _id: userId },
+          { $push: { notifications: notification } },
+          { new: true } // To get the updated user document
+        );
+        // console.log(user);
+        
+
+        console.log('Notification sent:', notification);
+      } catch (error) {
+        console.error('Error sending notification:', error);
+      }
+    }, timeUntilNextMonday8AM);
+
+    return res.status(200).json({ message: 'Notification scheduled successfully' });
+
+  } catch (err) {
+    console.error('Error scheduling notification:', err);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+// router.post("/set-notification", async (req:any, res:any) => {
+//   // const postId = req.body._id;
+//   let remainder;
+//   const noteDetails = {
+//     _id: req.body._id, //This is the note MongoDb Id
+//     userId: req.body.userId,//This is the userId
+//     // noteId: req.body.noteId,//This is the id that comes with the note
+//     username: req.body.username,
+//     title: req.body.title,
+//     note: req.body.note,
+//     picture: req.body.picture,
+//     bgColor: req.body.bgColor,
+//     bgImage: req.body.bgImage,
+//     drawing: req.body.drawing,
+//     label: req.body.label,
+//     collaborator: req.body.collaborator,
+//     createdAt: req.body.createdAt, // Add the createdAt timestamp
+//   };
+//   try {
+//      // The notification message
+//     const notificationMessage = "You have a notification";
+//     // The notification object with the message and userDetails
+//     const notification = {
+//       message: notificationMessage,
+//       ...noteDetails,
+//     };
+//     remainder = await User.findOneAndUpdate(
+//       {
+//         _id: req.body._id,
+//       },
+//       {
+//         $push: { notifications: notification },
+//       }
+//     );   
+//     console.log(remainder);
+    
+//   } catch (err) {
+//     console.log(err);
+//   }
+//   if (!remainder) {
+//     return res.status(404).json({ message: "Can't set Remainder" });
+//   }
+//   console.log(remainder);
+//   return res.status(200).json({ message: "Successfully set Remainder" });
+  
+// });
 
 
 module.exports = router; // Export the router instance

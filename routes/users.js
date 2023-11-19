@@ -35,11 +35,12 @@ router.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, functio
             email: req.body.email,
             password: req.body.password,
             profilePic: req.body.profilePic,
+            notifications: req.body.notifications
         });
         // console.log(newUser);
         //Here we assign the newly created user to the user variable and save() which is a mongoose method), Then we say the res.user should come in json file
         const user = yield newUser.save();
-        console.log(user, "I am user");
+        // console.log(user, "I am user")
         res.status(200).json(user);
     }
     catch (err) {
