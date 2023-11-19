@@ -240,48 +240,43 @@ router.post('/set-notification/next-week', (req, res) => __awaiter(void 0, void 
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 }));
-// router.post("/set-notification", async (req:any, res:any) => {
-//   // const postId = req.body._id;
-//   let remainder;
-//   const noteDetails = {
-//     _id: req.body._id, //This is the note MongoDb Id
-//     userId: req.body.userId,//This is the userId
-//     // noteId: req.body.noteId,//This is the id that comes with the note
-//     username: req.body.username,
-//     title: req.body.title,
-//     note: req.body.note,
-//     picture: req.body.picture,
-//     bgColor: req.body.bgColor,
-//     bgImage: req.body.bgImage,
-//     drawing: req.body.drawing,
-//     label: req.body.label,
-//     collaborator: req.body.collaborator,
-//     createdAt: req.body.createdAt, // Add the createdAt timestamp
-//   };
-//   try {
-//      // The notification message
-//     const notificationMessage = "You have a notification";
-//     // The notification object with the message and userDetails
-//     const notification = {
-//       message: notificationMessage,
-//       ...noteDetails,
-//     };
-//     remainder = await User.findOneAndUpdate(
-//       {
-//         _id: req.body._id,
-//       },
-//       {
-//         $push: { notifications: notification },
-//       }
-//     );   
-//     console.log(remainder);
-//   } catch (err) {
-//     console.log(err);
-//   }
-//   if (!remainder) {
-//     return res.status(404).json({ message: "Can't set Remainder" });
-//   }
-//   console.log(remainder);
-//   return res.status(200).json({ message: "Successfully set Remainder" });
-// });
+router.post("/set-notification/pick-a-time", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // const postId = req.body._id;
+    let remainder;
+    const noteDetails = {
+        _id: req.body._id,
+        userId: req.body.userId,
+        // noteId: req.body.noteId,//This is the id that comes with the note
+        username: req.body.username,
+        title: req.body.title,
+        note: req.body.note,
+        picture: req.body.picture,
+        bgColor: req.body.bgColor,
+        bgImage: req.body.bgImage,
+        drawing: req.body.drawing,
+        label: req.body.label,
+        collaborator: req.body.collaborator,
+        createdAt: req.body.createdAt, // Add the createdAt timestamp
+    };
+    try {
+        // The notification message
+        const notificationMessage = "You have a notification";
+        // The notification object with the message and userDetails
+        const notification = Object.assign({ message: notificationMessage }, noteDetails);
+        remainder = yield User.findOneAndUpdate({
+            _id: req.body._id,
+        }, {
+            $push: { notifications: notification },
+        });
+        console.log(remainder);
+    }
+    catch (err) {
+        console.log(err);
+    }
+    if (!remainder) {
+        return res.status(404).json({ message: "Can't set Remainder" });
+    }
+    console.log(remainder);
+    return res.status(200).json({ message: "Successfully set Remainder" });
+}));
 module.exports = router; // Export the router instance
