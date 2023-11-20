@@ -28,6 +28,7 @@ router.put("/update-note/:id", (req, res) => __awaiter(void 0, void 0, void 0, f
     // console.log(req.body._id, "This is _Id");
     // console.log( req.params.id, "This is Req and params ");
     if (req.body._id == req.params.id) {
+        // console.log(req.params.id);
         try {
             const updatedNote = yield Note.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true } //When this line is added whatever you update shows immediately in postman
             );
@@ -87,7 +88,7 @@ router.get(`/getall-notes/:userId`, (req, res) => __awaiter(void 0, void 0, void
     return res.status(200).json({ notes });
 }));
 router.post('/set-notification/later-today', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { _id, userId, username, title, note, picture, bgColor, bgImage, drawing, label, collaborator, createdAt } = req.body;
+    const { _id, userId, username, title, note, picture, bgColor, bgImage, drawing, location, label, collaborator, createdAt } = req.body;
     try {
         // Calculating the time until 8 AM tomorrow
         const now = new Date();
@@ -112,6 +113,7 @@ router.post('/set-notification/later-today', (req, res) => __awaiter(void 0, voi
             picture,
             bgColor,
             bgImage,
+            location,
             drawing,
             label,
             collaborator,
@@ -141,7 +143,7 @@ router.post('/set-notification/later-today', (req, res) => __awaiter(void 0, voi
     }
 }));
 router.post('/set-notification/tomorrow', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { _id, userId, username, title, note, picture, bgColor, bgImage, drawing, label, collaborator, createdAt } = req.body;
+    const { _id, userId, username, title, note, picture, bgColor, bgImage, location, drawing, label, collaborator, createdAt } = req.body;
     try {
         // Calculating the time until 8 AM tomorrow
         const now = new Date();
@@ -167,6 +169,7 @@ router.post('/set-notification/tomorrow', (req, res) => __awaiter(void 0, void 0
             bgColor,
             bgImage,
             drawing,
+            location,
             label,
             collaborator,
             createdAt,
@@ -192,7 +195,7 @@ router.post('/set-notification/tomorrow', (req, res) => __awaiter(void 0, void 0
     }
 }));
 router.post('/set-notification/next-week', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { _id, userId, username, title, note, picture, bgColor, bgImage, drawing, label, collaborator, createdAt } = req.body;
+    const { _id, userId, username, title, note, picture, bgColor, bgImage, location, drawing, label, collaborator, createdAt } = req.body;
     try {
         // Calculating the time until next monday tomorrow
         const now = new Date();
@@ -216,6 +219,7 @@ router.post('/set-notification/next-week', (req, res) => __awaiter(void 0, void 
             bgColor,
             bgImage,
             drawing,
+            location,
             label,
             collaborator,
             createdAt,
@@ -254,6 +258,7 @@ router.post("/set-notification/pick-a-time", (req, res) => __awaiter(void 0, voi
         bgColor: req.body.bgColor,
         bgImage: req.body.bgImage,
         drawing: req.body.drawing,
+        location: req.body.location,
         label: req.body.label,
         collaborator: req.body.collaborator,
         createdAt: req.body.createdAt, // Add the createdAt timestamp

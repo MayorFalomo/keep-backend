@@ -20,6 +20,8 @@ router.put("/update-note/:id", async (req: any, res: any) => {
   // console.log(req.body._id, "This is _Id");
   // console.log( req.params.id, "This is Req and params ");
   if (req.body._id == req.params.id) {
+    // console.log(req.params.id);
+    
         try {            
             const updatedNote = await Note.findByIdAndUpdate(
                 req.params.id,
@@ -88,7 +90,7 @@ router.get(`/getall-notes/:userId`, async (req:any, res:any) => {
 
 
 router.post('/set-notification/later-today', async (req:any, res:any) => {
-  const { _id, userId, username, title, note, picture, bgColor, bgImage, drawing, label, collaborator, createdAt } = req.body;
+  const { _id, userId, username, title, note, picture, bgColor, bgImage, drawing, location, label, collaborator, createdAt } = req.body;
 
   try {
    // Calculating the time until 8 AM tomorrow
@@ -118,6 +120,7 @@ router.post('/set-notification/later-today', async (req:any, res:any) => {
       picture,
       bgColor,
       bgImage,
+      location,
       drawing,
       label,
       collaborator,
@@ -150,7 +153,7 @@ router.post('/set-notification/later-today', async (req:any, res:any) => {
   }
 });
 router.post('/set-notification/tomorrow', async (req:any, res:any) => {
-  const { _id, userId, username, title, note, picture, bgColor, bgImage, drawing, label, collaborator, createdAt } = req.body;
+  const { _id, userId, username, title, note, picture, bgColor, bgImage, location, drawing, label, collaborator, createdAt } = req.body;
 
   try {
    // Calculating the time until 8 AM tomorrow
@@ -181,6 +184,7 @@ router.post('/set-notification/tomorrow', async (req:any, res:any) => {
       bgColor,
       bgImage,
       drawing,
+      location,
       label,
       collaborator,
       createdAt,
@@ -213,7 +217,7 @@ router.post('/set-notification/tomorrow', async (req:any, res:any) => {
 
 
 router.post('/set-notification/next-week', async (req:any, res:any) => {
-  const { _id, userId, username, title, note, picture, bgColor, bgImage, drawing, label, collaborator, createdAt } = req.body;
+  const { _id, userId, username, title, note, picture, bgColor, bgImage,location, drawing, label, collaborator, createdAt } = req.body;
 
   try {
     // Calculating the time until next monday tomorrow
@@ -241,6 +245,7 @@ router.post('/set-notification/next-week', async (req:any, res:any) => {
       bgColor,
       bgImage,
       drawing,
+      location,
       label,
       collaborator,
       createdAt,
@@ -285,6 +290,7 @@ router.post("/set-notification/pick-a-time", async (req:any, res:any) => {
     bgColor: req.body.bgColor,
     bgImage: req.body.bgImage,
     drawing: req.body.drawing,
+    location: req.body.location,
     label: req.body.label,
     collaborator: req.body.collaborator,
     createdAt: req.body.createdAt, // Add the createdAt timestamp

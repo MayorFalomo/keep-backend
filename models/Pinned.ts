@@ -46,6 +46,10 @@ const PinnedSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    location: {
+      type: String,
+      required: false,
+    },
     pinnedId: {
       type: String,
       required: false,
