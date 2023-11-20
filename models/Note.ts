@@ -38,8 +38,12 @@ const NoteSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    remainder: {
+    location: {
       type: String,
+      required: false,
+    },
+    remainder: {
+      type: Boolean,
       required: false,
     },
     collaborator: {

@@ -41,8 +41,12 @@ const NoteSchema = new mongoose_1.default.Schema({
         type: String,
         required: false,
     },
-    remainder: {
+    location: {
         type: String,
+        required: false,
+    },
+    remainder: {
+        type: Boolean,
         required: false,
     },
     collaborator: {
