@@ -276,52 +276,83 @@ router.post('/set-notification/next-week', async (req:any, res:any) => {
   }
 });
 
-router.post("/set-notification/pick-a-time", async (req:any, res:any) => {
-  // const postId = req.body._id;
-  let remainder;
-  const noteDetails = {
-    _id: req.body._id, //This is the note MongoDb Id
-    userId: req.body.userId,//This is the userId
-    // noteId: req.body.noteId,//This is the id that comes with the note
-    username: req.body.username,
-    title: req.body.title,
-    note: req.body.note,
-    picture: req.body.picture,
-    bgColor: req.body.bgColor,
-    bgImage: req.body.bgImage,
-    drawing: req.body.drawing,
-    location: req.body.location,
-    label: req.body.label,
-    collaborator: req.body.collaborator,
-    createdAt: req.body.createdAt, // Add the createdAt timestamp
-  };
+router.post('/set-notification/pick-a-time', async (req: any, res: any) => {
+  const { _id, userId, username, title, note, picture, bgColor, bgImage, location, drawing, label, collaborator, createdAt } = req.body;
+
   try {
-     // The notification message
-    const notificationMessage = "You have a notification";
+    const time = new Date(req.body.time); // Get the time value from req.body
+
+    console.log(time, "This is time");
+    
+    const now = new Date();
+    const timeUntilNotification = time.getTime() - now.getTime();
+console.log(timeUntilNotification, "Time until notification");
+
+    // The notification message
+    const notificationMessage = 'You have a notification';
+
     // The notification object with the message and userDetails
     const notification = {
       message: notificationMessage,
-      ...noteDetails,
+      _id,
+      userId,
+      username,
+      title,
+      note,
+      picture,
+      bgColor,
+      bgImage,
+      drawing,
+      location,
+      label,
+      collaborator,
+      createdAt,
     };
-    remainder = await User.findOneAndUpdate(
-      {
-        _id: req.body._id,
-      },
-      {
-        $push: { notifications: notification },
+
+    // Set the timeout to send the notification at the specified time
+    setTimeout(async () => {
+      try {
+        // Find the user and push the notification object into their notifications array
+        const user = await User.findOneAndUpdate(
+          { _id: userId },
+          { $push: { notifications: notification } },
+          { new: true } // To get the updated user document
+        );
+
+        console.log('Notification sent:', notification);
+      } catch (error) {
+        console.error('Error sending notification:', error);
       }
-    );   
-    console.log(remainder);
-    
+    }, timeUntilNotification);
+
+    return res.status(200).json({ message: 'Notification scheduled successfully' });
   } catch (err) {
-    console.log(err);
+    console.error('Error scheduling notification:', err);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
-  if (!remainder) {
-    return res.status(404).json({ message: "Can't set Remainder" });
+});
+
+//Route to delete Country from the note
+router.put('/delete-country/:id', async (req:any, res:any) => {
+  const noteId = req.params.id;
+
+  try {
+    // Find the note by ID
+    const note = await Note.findById(noteId);
+
+    // If the note is found, update the location to an empty string
+    if (note) {
+      note.location = '';
+      await note.save();
+
+      return res.status(200).json({ message: 'Country deleted successfully', note });
+    } else {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
-  console.log(remainder);
-  return res.status(200).json({ message: "Successfully set Remainder" });
-  
 });
 
 
