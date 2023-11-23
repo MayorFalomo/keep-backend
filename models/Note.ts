@@ -47,7 +47,7 @@ const NoteSchema = new mongoose.Schema(
       required: false,
     },
     collaborator: {
-      type: String,
+      type: Array,
       required: false,
     },
     label: {

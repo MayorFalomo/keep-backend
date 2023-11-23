@@ -29,7 +29,6 @@ router.post('/add-pinned', async (req: any, res: any) => {
             saved: true,
         })
         await pinned.save();
-        console.log(pinned);
         return res.status(200).json({ message: "Note pinned successfully" });
     } catch (err) {
         console.error(err);
@@ -78,6 +77,7 @@ router.get('/getall-pinned-notes/:id', async (req: any, res: any, next) => {
     return res.status(200).json(pinned)
 });
 
+//Route to find pinned of a particular user
 router.get('/pinned-id/:id', async (req: any, res: any, next) => {
     const id = req.params.id
 

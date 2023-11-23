@@ -17,10 +17,7 @@ router.post("/create-note", async (req:any, res:any) => {
 //Update a note
 router.put("/update-note/:id", async (req: any, res: any) => {
     //basically we're running an if check before updating the note, to check if it's the actual user
-  // console.log(req.body._id, "This is _Id");
-  // console.log( req.params.id, "This is Req and params ");
   if (req.body._id == req.params.id) {
-    // console.log(req.params.id);
     
         try {            
             const updatedNote = await Note.findByIdAndUpdate(
@@ -52,6 +49,60 @@ router.get('/get-note/:id', async (req: any, res: any) => {
         return res.status(404).json({ message: "Can't get this Pinned Notes" })
     }
     return res.status(200).json(note)
+});
+
+// Search for users by their username
+router.get('/search', async (req:any, res:any) => {
+  const { username } = req.query;
+
+  try {
+    const users = await User.findOne({ username: { $regex: new RegExp(username, 'i') } });
+    console.log(users, "This is users");
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.post('/send-note', async (req:any, res:any) => {
+  const {  _id, userId, generatedId, username, toUsername, title, note, picture, bgColor, bgImage, drawing, location, label, collaborator, createdAt } = req.body;
+
+  try {
+    const toUser = await User.findOne({ username: toUsername });
+    if (!toUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    // Check if the note with the specified _id exists
+    const existingNote = await Note.findById(_id);
+    if (existingNote) {
+      //Then i Update the collaborator field for the existing note
+      await Note.findByIdAndUpdate(_id, { collaborator: toUsername });
+    } else {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+//Then i create & send the new note with the new collaborator
+    const newNote = new Note({
+      _id : generatedId ,
+      userId: toUser?._id ,
+      username: toUser?.username ,
+      toUsername,
+      title,
+      note,
+      picture,
+      bgColor,
+      bgImage,
+      drawing,
+      location,
+      label,
+      collaborator: username ,
+      createdAt: new Date(),
+    });
+    await newNote.save();
+
+    res.json({ message: 'Note sent successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 //Route to get all the note of a single user by userId
@@ -282,7 +333,7 @@ router.post('/set-notification/pick-a-time', async (req: any, res: any) => {
   try {
     const time = new Date(req.body.time); // Get the time value from req.body
 
-    console.log(time, "This is time");
+    // console.log(time, "This is time");
     
     const now = new Date();
     const timeUntilNotification = time.getTime() - now.getTime();

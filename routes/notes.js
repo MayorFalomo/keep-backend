@@ -25,10 +25,7 @@ router.post("/create-note", (req, res) => __awaiter(void 0, void 0, void 0, func
 //Update a note
 router.put("/update-note/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //basically we're running an if check before updating the note, to check if it's the actual user
-    // console.log(req.body._id, "This is _Id");
-    // console.log( req.params.id, "This is Req and params ");
     if (req.body._id == req.params.id) {
-        // console.log(req.params.id);
         try {
             const updatedNote = yield Note.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true } //When this line is added whatever you update shows immediately in postman
             );
@@ -57,6 +54,58 @@ router.get('/get-note/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
         return res.status(404).json({ message: "Can't get this Pinned Notes" });
     }
     return res.status(200).json(note);
+}));
+// Search for users by their username
+router.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { username } = req.query;
+    try {
+        const users = yield User.findOne({ username: { $regex: new RegExp(username, 'i') } });
+        console.log(users, "This is users");
+        res.json(users);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}));
+router.post('/send-note', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { _id, userId, generatedId, username, toUsername, title, note, picture, bgColor, bgImage, drawing, location, label, collaborator, createdAt } = req.body;
+    try {
+        const toUser = yield User.findOne({ username: toUsername });
+        if (!toUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        // Check if the note with the specified _id exists
+        const existingNote = yield Note.findById(_id);
+        if (existingNote) {
+            //Then i Update the collaborator field for the existing note
+            yield Note.findByIdAndUpdate(_id, { collaborator: toUsername });
+        }
+        else {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+        //Then i create & send the new note with the new collaborator
+        const newNote = new Note({
+            _id: generatedId,
+            userId: toUser === null || toUser === void 0 ? void 0 : toUser._id,
+            username: toUser === null || toUser === void 0 ? void 0 : toUser.username,
+            toUsername,
+            title,
+            note,
+            picture,
+            bgColor,
+            bgImage,
+            drawing,
+            location,
+            label,
+            collaborator: username,
+            createdAt: new Date(),
+        });
+        yield newNote.save();
+        res.json({ message: 'Note sent successfully' });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 }));
 //Route to get all the note of a single user by userId
 // router.get(`/:id`, async (req:any, res:any) => {
@@ -248,7 +297,7 @@ router.post('/set-notification/pick-a-time', (req, res) => __awaiter(void 0, voi
     const { _id, userId, username, title, note, picture, bgColor, bgImage, location, drawing, label, collaborator, createdAt } = req.body;
     try {
         const time = new Date(req.body.time); // Get the time value from req.body
-        console.log(time, "This is time");
+        // console.log(time, "This is time");
         const now = new Date();
         const timeUntilNotification = time.getTime() - now.getTime();
         console.log(timeUntilNotification, "Time until notification");
