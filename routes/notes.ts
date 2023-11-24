@@ -53,10 +53,13 @@ router.get('/get-note/:id', async (req: any, res: any) => {
 
 // Search for users by their username
 router.get('/search', async (req:any, res:any) => {
-  const { username } = req.query;
+  const { username, email } = req.query;
 
   try {
-    const users = await User.findOne({ username: { $regex: new RegExp(username, 'i') } });
+    const users = await User.findOne({ $or: [
+    { username: { $regex: new RegExp(username, 'i') } },
+    { email: { $regex: new RegExp(username, 'i') } }
+  ] });
     console.log(users, "This is users");
     res.json(users);
   } catch (error) {
@@ -65,10 +68,16 @@ router.get('/search', async (req:any, res:any) => {
 });
 
 router.post('/send-note', async (req:any, res:any) => {
-  const {  _id, userId, generatedId, username, toUsername, title, note, picture, bgColor, bgImage, drawing, location, label, collaborator, createdAt } = req.body;
+  const {  _id, userId, generatedId, username, toUsername, email, title, note, picture, bgColor, bgImage, drawing, location, label, collaborator, createdAt } = req.body;
 
   try {
-    const toUser = await User.findOne({ username: toUsername });
+    // const toUser = await User.findOne({ username: toUsername });
+    const toUser = await User.findOne({
+      $or: [
+        { _id: toUsername },  // Assuming toUsername is the user ID
+        { email: email }  // Assuming toUsername is the user email
+      ]
+    })
     if (!toUser) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -76,7 +85,8 @@ router.post('/send-note', async (req:any, res:any) => {
     const existingNote = await Note.findById(_id);
     if (existingNote) {
       //Then i Update the collaborator field for the existing note
-      await Note.findByIdAndUpdate(_id, { collaborator: toUsername });
+      await Note.findByIdAndUpdate(_id, { $push: { collaborator: toUsername } });
+      // await Note.findByIdAndUpdate(_id, { collaborator: toUsername });
     } else {
       return res.status(404).json({ error: 'Note not found' });
     }
@@ -94,7 +104,7 @@ router.post('/send-note', async (req:any, res:any) => {
       drawing,
       location,
       label,
-      collaborator: username ,
+      collaborator: [username] ,
       createdAt: new Date(),
     });
     await newNote.save();

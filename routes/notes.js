@@ -57,9 +57,12 @@ router.get('/get-note/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
 }));
 // Search for users by their username
 router.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username } = req.query;
+    const { username, email } = req.query;
     try {
-        const users = yield User.findOne({ username: { $regex: new RegExp(username, 'i') } });
+        const users = yield User.findOne({ $or: [
+                { username: { $regex: new RegExp(username, 'i') } },
+                { email: { $regex: new RegExp(username, 'i') } }
+            ] });
         console.log(users, "This is users");
         res.json(users);
     }
@@ -68,9 +71,15 @@ router.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 }));
 router.post('/send-note', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { _id, userId, generatedId, username, toUsername, title, note, picture, bgColor, bgImage, drawing, location, label, collaborator, createdAt } = req.body;
+    const { _id, userId, generatedId, username, toUsername, email, title, note, picture, bgColor, bgImage, drawing, location, label, collaborator, createdAt } = req.body;
     try {
-        const toUser = yield User.findOne({ username: toUsername });
+        // const toUser = await User.findOne({ username: toUsername });
+        const toUser = yield User.findOne({
+            $or: [
+                { _id: toUsername },
+                { email: email } // Assuming toUsername is the user email
+            ]
+        });
         if (!toUser) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -78,7 +87,8 @@ router.post('/send-note', (req, res) => __awaiter(void 0, void 0, void 0, functi
         const existingNote = yield Note.findById(_id);
         if (existingNote) {
             //Then i Update the collaborator field for the existing note
-            yield Note.findByIdAndUpdate(_id, { collaborator: toUsername });
+            yield Note.findByIdAndUpdate(_id, { $push: { collaborator: toUsername } });
+            // await Note.findByIdAndUpdate(_id, { collaborator: toUsername });
         }
         else {
             return res.status(404).json({ error: 'Note not found' });
@@ -97,7 +107,7 @@ router.post('/send-note', (req, res) => __awaiter(void 0, void 0, void 0, functi
             drawing,
             location,
             label,
-            collaborator: username,
+            collaborator: [username],
             createdAt: new Date(),
         });
         yield newNote.save();
