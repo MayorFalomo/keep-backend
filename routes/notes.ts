@@ -58,7 +58,7 @@ router.get('/search', async (req:any, res:any) => {
   try {
     const users = await User.findOne({ $or: [
     { username: { $regex: new RegExp(username, 'i') } },
-    { email: { $regex: new RegExp(username, 'i') } }
+    { email: { $regex: new RegExp(email, 'i') } }
   ] });
     console.log(users, "This is users");
     res.json(users);

@@ -29,6 +29,10 @@ const NoteSchema = new mongoose_1.default.Schema({
         type: String,
         required: false,
     },
+    canvas: {
+        type: Array,
+        required: false,
+    },
     drawing: {
         type: String,
         required: false,

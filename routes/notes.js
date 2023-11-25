@@ -61,7 +61,7 @@ router.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         const users = yield User.findOne({ $or: [
                 { username: { $regex: new RegExp(username, 'i') } },
-                { email: { $regex: new RegExp(username, 'i') } }
+                { email: { $regex: new RegExp(email, 'i') } }
             ] });
         console.log(users, "This is users");
         res.json(users);
