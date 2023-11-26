@@ -89,6 +89,17 @@ router.get("/get-user/:id", (req, res) => __awaiter(void 0, void 0, void 0, func
         res.status(500).json(err);
     }
 }));
+// Search for users by their username
+router.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { username, email } = req.query;
+    try {
+        const users = yield User.findOne({ username: { $regex: new RegExp(username, 'i') } });
+        return res.json(users);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}));
 //Update a users info
 router.put("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.body.userId == req.params.id) {

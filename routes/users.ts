@@ -57,6 +57,8 @@ router.get("/get-user/:id", async (req:any, res:any) => {
     res.status(500).json(err);
   }
 });
+
+
 //Get a user
 router.get("/get-user/:id", async (req:any, res:any) => {
   try {
@@ -70,6 +72,21 @@ router.get("/get-user/:id", async (req:any, res:any) => {
     res.status(500).json(err);
   }
 });
+
+
+// Search for users by their username
+router.get('/search', async (req:any, res:any) => {
+  const { username, email } = req.query;
+
+  try {
+    const users = await User.findOne({ username: { $regex: new RegExp(username, 'i') } });
+
+   return res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 //Update a users info
 router.put("/:id", async (req:any, res:any) => {
@@ -88,5 +105,6 @@ router.put("/:id", async (req:any, res:any) => {
     res.status(400).json({ message: "userId does not match" });
   }
 });
+
 
 module.exports = router;

@@ -42,7 +42,7 @@ const PinnedSchema = new mongoose_1.default.Schema({
         required: false,
     },
     collaborator: {
-        type: String,
+        type: Array,
         required: false,
     },
     label: {

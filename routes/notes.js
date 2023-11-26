@@ -55,21 +55,6 @@ router.get('/get-note/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
     }
     return res.status(200).json(note);
 }));
-// Search for users by their username
-router.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, email } = req.query;
-    try {
-        const users = yield User.findOne({ $or: [
-                { username: { $regex: new RegExp(username, 'i') } },
-                { email: { $regex: new RegExp(email, 'i') } }
-            ] });
-        console.log(users, "This is users");
-        res.json(users);
-    }
-    catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-}));
 router.post('/send-note', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { _id, userId, generatedId, username, toUsername, email, title, note, picture, bgColor, bgImage, drawing, location, label, collaborator, createdAt } = req.body;
     try {
