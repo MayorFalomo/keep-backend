@@ -81,7 +81,7 @@ router.get('/search', async (req:any, res:any) => {
   try {
     const users = await User.findOne({ username: { $regex: new RegExp(username, 'i') } });
 
-   return res.json(users);
+   return res.json([users]);
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }

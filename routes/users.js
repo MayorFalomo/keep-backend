@@ -94,7 +94,7 @@ router.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const { username, email } = req.query;
     try {
         const users = yield User.findOne({ username: { $regex: new RegExp(username, 'i') } });
-        return res.json(users);
+        return res.json([users]);
     }
     catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });

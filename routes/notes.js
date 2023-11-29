@@ -56,34 +56,26 @@ router.get('/get-note/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
     return res.status(200).json(note);
 }));
 router.post('/send-note', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { _id, userId, generatedId, username, toUsername, email, title, note, picture, bgColor, bgImage, drawing, location, label, collaborator, createdAt } = req.body;
+    const { _id, userId, generatedId, username, collabUsername, email, title, note, picture, bgColor, bgImage, drawing, location, label, collaborator, createdAt } = req.body;
+    // console.log(toUsername, "This is toUsername");
     try {
         // const toUser = await User.findOne({ username: toUsername });
         const toUser = yield User.findOne({
-            $or: [
-                { _id: toUsername },
-                { email: email } // Assuming toUsername is the user email
-            ]
+            collabUsername // Assuming toUsername is the user ID
         });
-        if (!toUser) {
-            return res.status(404).json({ error: 'User not found' });
-        }
+        // await Note.findByIdAndUpdate(_id, { $push: { collaborator: collabUsername } });
+        console.log(toUser, "This is toUser");
         // Check if the note with the specified _id exists
-        const existingNote = yield Note.findById(_id);
-        if (existingNote) {
-            //Then i Update the collaborator field for the existing note
-            yield Note.findByIdAndUpdate(_id, { $push: { collaborator: toUsername } });
-            // await Note.findByIdAndUpdate(_id, { collaborator: toUsername });
-        }
-        else {
-            return res.status(404).json({ error: 'Note not found' });
-        }
+        // const existingNote = await Note.findById(_id);
+        // // console.log(existingNote, "This is existing note");
+        // if (existingNote) {
+        //   console.log(existingNote);
         //Then i create & send the new note with the new collaborator
         const newNote = new Note({
             _id: generatedId,
-            userId: toUser === null || toUser === void 0 ? void 0 : toUser._id,
-            username: toUser === null || toUser === void 0 ? void 0 : toUser.username,
-            toUsername,
+            userId,
+            username,
+            email: toUser === null || toUser === void 0 ? void 0 : toUser.email,
             title,
             note,
             picture,
@@ -92,14 +84,23 @@ router.post('/send-note', (req, res) => __awaiter(void 0, void 0, void 0, functi
             drawing,
             location,
             label,
-            collaborator: [username],
+            collaborator: [collaborator],
             createdAt: new Date(),
         });
         yield newNote.save();
+        console.log(newNote);
         res.json({ message: 'Note sent successfully' });
+        //Then i Update the collaborator field for the existing note
+        // await Note.findByIdAndUpdate(_id, { collaborator: collabUsername });
+        // } else {
+        //   return res.status(404).json({ error: 'Note not found' });
+        // }
+        if (!toUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
     }
     catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: 'wtf is Internal Error' });
     }
 }));
 //Route to get all the note of a single user by userId
