@@ -344,19 +344,23 @@ router.put('/delete-country/:id', (req, res) => __awaiter(void 0, void 0, void 0
     }
 }));
 router.post('/set-bgcolor', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const noteId = req.body.id;
+    const _id = req.body.id;
     try {
-        const note = yield Note.findById(noteId);
+        const note = yield Note.findById(_id);
         if (note) {
+            console.log(note, "This is the note");
+            console.log(req.body.bgColor, "This is the color");
             note.bgColor = req.body.bgColor;
             yield note.save();
-            return res.status(200).json({ message: 'Background color set successfully', note });
+            return res.status(200).json({ message: 'Background color set successfully', updatedNote: note });
         }
         else {
             return res.status(404).json({ message: 'Note not found, setting bg failed' });
         }
     }
-    finally {
+    catch (err) {
+        // console.error('Error setting background color:', err);
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 }));
 module.exports = router; // Export the router instance
