@@ -53,29 +53,19 @@ router.get('/get-note/:id', async (req: any, res: any) => {
 
 
 router.post('/send-note', async (req:any, res:any) => {
-  const {  _id, userId, generatedId, username, collabUsername, email, title, note, picture, bgColor, bgImage, drawing, location, label, collaborator, createdAt } = req.body;
-// console.log(toUsername, "This is toUsername");
+  const {  _id, userId, generatedId, username, collabUsername, email, title, note, picture, bgColor, bgImage, drawing, canvas, location, label, collaborator, createdAt } = req.body;
 
   try {
-    // const toUser = await User.findOne({ username: toUsername });
     const toUser = await User.findOne({
-      collabUsername   // Assuming toUsername is the user ID
+      username   // collabUsername is the username of the user we 're sending to and finding
     })
    
-          // await Note.findByIdAndUpdate(_id, { $push: { collaborator: collabUsername } });
-
-    console.log(toUser, "This is toUser");
-    
-    // Check if the note with the specified _id exists
-    // const existingNote = await Note.findById(_id);
-    // // console.log(existingNote, "This is existing note");
-    // if (existingNote) {
-    //   console.log(existingNote);
+    await Note.findByIdAndUpdate(_id, { $push: { collaborator: collabUsername } });
 
       //Then i create & send the new note with the new collaborator
     const newNote = new Note({
-      _id : generatedId ,
-      userId, //The current user Id
+      _id : generatedId , //generated Id so the note is new
+      userId: toUser?._id ,  //The current user's Id
       username,
       email: toUser?.email,
       title,
@@ -86,19 +76,14 @@ router.post('/send-note', async (req:any, res:any) => {
       drawing,
       location,
       label,
-      collaborator: [collaborator] ,
-      createdAt: new Date(),
+      canvas,
+      collaborator: collaborator ,
+      createdAt,
     });
     await newNote.save();
-    console.log(newNote);
     
     res.json({ message: 'Note sent successfully' });
       
-      //Then i Update the collaborator field for the existing note
-      // await Note.findByIdAndUpdate(_id, { collaborator: collabUsername });
-    // } else {
-    //   return res.status(404).json({ error: 'Note not found' });
-    // }
      if (!toUser) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -408,6 +393,24 @@ router.put('/delete-country/:id', async (req:any, res:any) => {
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+router.post('/set-bgcolor', async (req:any, res:any) => {
+  const noteId = req.body.id;
+
+  try {
+    const note = await Note.findById(noteId);
+
+    if (note) { 
+      note.bgColor = req.body.bgColor;
+      await note.save();
+
+      return res.status(200).json({ message: 'Background color set successfully', note })
+    }
+    else {
+      return res.status(404).json({ message: 'Note not found, setting bg failed'})
+    }
+  }
+})
 
 
 module.exports = router; // Export the router instance

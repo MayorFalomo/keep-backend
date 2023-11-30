@@ -56,24 +56,16 @@ router.get('/get-note/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
     return res.status(200).json(note);
 }));
 router.post('/send-note', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { _id, userId, generatedId, username, collabUsername, email, title, note, picture, bgColor, bgImage, drawing, location, label, collaborator, createdAt } = req.body;
-    // console.log(toUsername, "This is toUsername");
+    const { _id, userId, generatedId, username, collabUsername, email, title, note, picture, bgColor, bgImage, drawing, canvas, location, label, collaborator, createdAt } = req.body;
     try {
-        // const toUser = await User.findOne({ username: toUsername });
         const toUser = yield User.findOne({
-            collabUsername // Assuming toUsername is the user ID
+            username // collabUsername is the username of the user we 're sending to and finding
         });
-        // await Note.findByIdAndUpdate(_id, { $push: { collaborator: collabUsername } });
-        console.log(toUser, "This is toUser");
-        // Check if the note with the specified _id exists
-        // const existingNote = await Note.findById(_id);
-        // // console.log(existingNote, "This is existing note");
-        // if (existingNote) {
-        //   console.log(existingNote);
+        yield Note.findByIdAndUpdate(_id, { $push: { collaborator: collabUsername } });
         //Then i create & send the new note with the new collaborator
         const newNote = new Note({
             _id: generatedId,
-            userId,
+            userId: toUser === null || toUser === void 0 ? void 0 : toUser._id,
             username,
             email: toUser === null || toUser === void 0 ? void 0 : toUser.email,
             title,
@@ -84,17 +76,12 @@ router.post('/send-note', (req, res) => __awaiter(void 0, void 0, void 0, functi
             drawing,
             location,
             label,
-            collaborator: [collaborator],
-            createdAt: new Date(),
+            canvas,
+            collaborator: collaborator,
+            createdAt,
         });
         yield newNote.save();
-        console.log(newNote);
         res.json({ message: 'Note sent successfully' });
-        //Then i Update the collaborator field for the existing note
-        // await Note.findByIdAndUpdate(_id, { collaborator: collabUsername });
-        // } else {
-        //   return res.status(404).json({ error: 'Note not found' });
-        // }
         if (!toUser) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -354,6 +341,22 @@ router.put('/delete-country/:id', (req, res) => __awaiter(void 0, void 0, void 0
     catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Internal Server Error' });
+    }
+}));
+router.post('/set-bgcolor', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const noteId = req.body.id;
+    try {
+        const note = yield Note.findById(noteId);
+        if (note) {
+            note.bgColor = req.body.bgColor;
+            yield note.save();
+            return res.status(200).json({ message: 'Background color set successfully', note });
+        }
+        else {
+            return res.status(404).json({ message: 'Note not found, setting bg failed' });
+        }
+    }
+    finally {
     }
 }));
 module.exports = router; // Export the router instance
