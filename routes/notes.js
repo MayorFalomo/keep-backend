@@ -348,9 +348,48 @@ router.post('/set-bgcolor', (req, res) => __awaiter(void 0, void 0, void 0, func
     try {
         const note = yield Note.findById(_id);
         if (note) {
-            console.log(note, "This is the note");
-            console.log(req.body.bgColor, "This is the color");
+            // console.log(note, "This is the note");
+            // console.log(req.body.bgColor, "This is the color");
             note.bgColor = req.body.bgColor;
+            note.bgImage = " ";
+            yield note.save();
+            return res.status(200).json({ message: 'Background color set successfully', updatedNote: note });
+        }
+        else {
+            return res.status(404).json({ message: 'Note not found, setting bg failed' });
+        }
+    }
+    catch (err) {
+        // console.error('Error setting background color:', err);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+}));
+router.post('/set-bgimage', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const _id = req.body.id;
+    try {
+        const note = yield Note.findById(_id);
+        if (note) {
+            note.bgImage = req.body.bgImage;
+            note.bgColor = " ";
+            yield note.save();
+            return res.status(200).json({ message: 'Background color set successfully', updatedNote: note });
+        }
+        else {
+            return res.status(404).json({ message: 'Note not found, setting bg failed' });
+        }
+    }
+    catch (err) {
+        // console.error('Error setting background color:', err);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+}));
+router.post('/upload-picture', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const _id = req.body.id;
+    console.log(_id);
+    try {
+        const note = yield Note.findById(_id);
+        if (note) {
+            note.picture = req.body.picture;
             yield note.save();
             return res.status(200).json({ message: 'Background color set successfully', updatedNote: note });
         }

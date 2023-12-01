@@ -406,7 +406,7 @@ router.post('/set-bgcolor', async (req: any, res: any) => {
       // console.log(req.body.bgColor, "This is the color");
       
       note.bgColor = req.body.bgColor;
-      note.bgImage = req.body.bgImage;
+      note.bgImage = " ";
       await note.save();
 
       return res.status(200).json({ message: 'Background color set successfully', updatedNote: note });
@@ -419,7 +419,7 @@ router.post('/set-bgcolor', async (req: any, res: any) => {
   }
 });
 
-router.post('/set-bgImage', async (req: any, res: any) => {
+router.post('/set-bgimage', async (req: any, res: any) => {
   const _id = req.body.id;
 
   try {
@@ -427,7 +427,27 @@ router.post('/set-bgImage', async (req: any, res: any) => {
 
     if (note) {       
       note.bgImage = req.body.bgImage;
-      note.bgColor = req.body.bgColor;
+      note.bgColor = " "
+      await note.save();
+
+      return res.status(200).json({ message: 'Background color set successfully', updatedNote: note });
+    } else {
+      return res.status(404).json({ message: 'Note not found, setting bg failed' });
+    }
+  } catch (err) {
+    // console.error('Error setting background color:', err);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+router.post('/upload-picture', async (req: any, res: any) => {
+  const _id = req.body.id;
+console.log(_id);
+
+  try {
+    const note = await Note.findById(_id);
+    
+    if (note) {       
+      note.picture = req.body.picture;
       await note.save();
 
       return res.status(200).json({ message: 'Background color set successfully', updatedNote: note });
