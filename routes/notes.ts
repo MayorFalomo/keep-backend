@@ -439,6 +439,8 @@ router.post('/set-bgimage', async (req: any, res: any) => {
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+//Route to upload picture and set it to the picture field
 router.post('/upload-picture', async (req: any, res: any) => {
   const _id = req.body.id;
 console.log(_id);
@@ -459,6 +461,9 @@ console.log(_id);
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+//UnArchive a note
+
 
 
 module.exports = router; // Export the router instance

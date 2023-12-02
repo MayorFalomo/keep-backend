@@ -5,10 +5,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const ArchiveSchema = new mongoose_1.default.Schema({
+    id: {
+        type: String,
+        required: false,
+    },
     username: {
         type: String,
         required: true,
         unique: true,
+    },
+    userId: {
+        type: String,
+        required: true,
     },
     title: {
         type: String,
@@ -20,8 +28,6 @@ const ArchiveSchema = new mongoose_1.default.Schema({
     },
     picture: {
         type: String,
-        // default: "https://i.pinimg.com/564x/33/f4/d8/33f4d8c6de4d69b21652512cbc30bb05.jpg",
-        // ref: "User",
         required: false,
     },
     drawing: {
@@ -37,17 +43,17 @@ const ArchiveSchema = new mongoose_1.default.Schema({
         required: false,
     },
     remainder: {
-        type: String,
+        type: Boolean,
         required: false,
     },
     collaborator: {
-        type: String,
+        type: Array,
         required: false,
     },
-    archivedId: {
-        type: String,
-        required: false,
-    },
+    //  archivedId: {
+    //   type: String,
+    //   required: false,
+    // },
     label: {
         type: String,
         required: false,

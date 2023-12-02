@@ -383,6 +383,7 @@ router.post('/set-bgimage', (req, res) => __awaiter(void 0, void 0, void 0, func
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 }));
+//Route to upload picture and set it to the picture field
 router.post('/upload-picture', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const _id = req.body.id;
     console.log(_id);
@@ -402,4 +403,5 @@ router.post('/upload-picture', (req, res) => __awaiter(void 0, void 0, void 0, f
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 }));
+//UnArchive a note
 module.exports = router; // Export the router instance
