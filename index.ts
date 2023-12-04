@@ -13,14 +13,20 @@ dotenv.config({ path: './vars/.env' });
 const app: Application = express();
 const port = process.env.PORT || 5000;
 app.use(express.json());
-app.use(cors());
+const corsConfig = {
+    origin: '',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
+}
+app.use(cors(corsConfig))
+app.options("", cors(corsConfig))
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Welcome to Express & TypeScript Server');
 });
 
 mongoose
-  .connect(process.env.MONGODB_URL || '', {
+  .connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
