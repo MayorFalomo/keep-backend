@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
     res.send('Welcome to Express & TypeScript Server');
 });
 mongoose_1.default
-    .connect(process.env.MONGODB_URL, {
+    .connect(process.env.MONGODB_URL || '', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
