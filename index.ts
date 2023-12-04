@@ -27,8 +27,8 @@ app.get('/', (req: Request, res: Response) => {
 
 mongoose
   .connect(`mongodb+srv://KaladinReborn:mayowa@cluster0.g848ftj.mongodb.net/keep?retryWrites=true&w=majority`, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    // useNewUrlParser: true,
+    // useUnifiedTopology: true,
   })
   .then(() => {
     console.log('Connected to MongoDB');
