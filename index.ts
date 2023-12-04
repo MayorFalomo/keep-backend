@@ -2,6 +2,9 @@ import express, { Express, Request, Response, Application } from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import { MongoClientOptions } from 'mongodb';
+
+
 const noteRoutes = require('./routes/notes')
 const pinnedRoutes = require('./routes/pinned')
 const archivedRoutes = require('./routes/archive')
@@ -27,8 +30,8 @@ app.get('/', (req: Request, res: Response) => {
 
 mongoose
   .connect(`mongodb+srv://KaladinReborn:mayowa@cluster0.g848ftj.mongodb.net/keep?retryWrites=true&w=majority`, {
-    // useNewUrlParser: true,
-    // useUnifiedTopology: true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
   .then(() => {
     console.log('Connected to MongoDB');
