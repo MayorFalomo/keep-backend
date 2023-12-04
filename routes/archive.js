@@ -76,16 +76,13 @@ router.post('/unarchived-notes', (req, res) => __awaiter(void 0, void 0, void 0,
             createdAt: req.body.createdAt,
         });
         // console.log(archived);
-        // await archived.save()
         // Save to Archived
         yield unarchived.save();
         // Remove from Note
         const existingNote = yield Archived.findById(noteId);
-        // console.log(existingNote, "This is existing note");
         if (!existingNote) {
             return res.status(404).json({ error: "Note not found" });
         }
-        // console.log(existingNote._id, "This is existing note id");
         yield Archived.findByIdAndRemove(existingNote._id);
     }
     catch (err) {
@@ -101,7 +98,7 @@ router.get('/get-archived/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
     const userId = req.params.id;
     let archived;
     try {
-        archived = yield Archived.find({ userDetail: userId });
+        archived = yield Archived.find({ userId: userId });
     }
     catch (err) {
         return res.status(404).json({ message: "Unable to find archived Notes" });
