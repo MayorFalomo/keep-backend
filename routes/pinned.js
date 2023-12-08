@@ -127,7 +127,7 @@ router.get("/pinned-id/:id", async (req, res) => {
 // });
 
 //Remove a Pinned Note
-router.delete("/remove-pinned/:id", async (req, resreq, res) => {
+router.delete("/remove-pinned/:id", async (req, res) => {
   let id = req.params.id;
   let note;
   try {
