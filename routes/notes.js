@@ -141,6 +141,7 @@ router.get(`/getall-notes/:userId`, async (req, res) => {
   return res.status(200).json({ notes });
 });
 
+//Route to set a notification for later today
 router.post("/set-notification/later-today", async (req, res) => {
   const {
     _id,
@@ -221,6 +222,8 @@ router.post("/set-notification/later-today", async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+//Route to set notification for tomorrow
 router.post("/set-notification/tomorrow", async (req, res) => {
   const {
     _id,
@@ -282,7 +285,11 @@ router.post("/set-notification/tomorrow", async (req, res) => {
           { new: true } // To get the updated user document
         );
         // console.log(user);
-
+        if (!user) {
+          return res.status(404).json({
+            message: "Notification with the provided ID already exists",
+          });
+        }
         console.log("Notification sent:", notification);
       } catch (error) {
         console.error("Error sending notification:", error);
@@ -356,6 +363,11 @@ router.post("/set-notification/next-week", async (req, res) => {
           { new: true } // To get the updated user document
         );
         // console.log(user);
+        if (!user) {
+          return res.status(404).json({
+            message: "Notification with the provided ID already exists",
+          });
+        }
 
         console.log("Notification sent:", notification);
       } catch (error) {
@@ -430,6 +442,11 @@ router.post("/set-notification/pick-a-time", async (req, res) => {
         );
 
         console.log("Notification sent:", notification);
+        if (!user) {
+          return res.status(404).json({
+            message: "Notification with the provided ID already exists",
+          });
+        }
       } catch (error) {
         console.error("Error sending notification:", error);
       }

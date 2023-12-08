@@ -16,7 +16,7 @@ mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
   })
-  .then(console.log(process.env.MONGO_URL, "Connected to mongoDB"))
+  .then(console.log("Connected to mongoDB"))
   .catch((err) => {
     console.log(err);
   });

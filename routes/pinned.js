@@ -1,5 +1,3 @@
-// import { Router } from "express";
-
 const router = require("express").Router();
 const Pinned = require("../models/Pinned");
 const Note = require("../models/Note");

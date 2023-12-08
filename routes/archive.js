@@ -1,5 +1,3 @@
-// import { Router } from "express";
-// import mongoose from "mongoose";
 const router = require("express").Router();
 const Archived = require("../models/Archive");
 const Note = require("../models/Note");
