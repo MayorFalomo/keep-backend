@@ -19,7 +19,7 @@ mongoose
     console.log(err);
   });
 
-app.get("/", () => {
+app.get("/", (req, res) => {
   res.send("Welcome to Express & TypeScript Server");
 });
 
