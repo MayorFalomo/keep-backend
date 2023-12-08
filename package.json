@@ -2,14 +2,14 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "backend for google keep",
-  "main": "index.ts",
+  "main": "index.js",
   "engines": {
     "node": "18.x"
   },
   "scripts": {
     "build": "npx tsc",
-    "start": "node dist/index.ts",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.ts\""
+    "start": "node dist/index.js",
+    "dev": "node index.js"
   },
   "author": "",
   "license": "ISC",
@@ -24,7 +24,6 @@
     "@types/express": "^4.17.20",
     "concurrently": "^8.2.2",
     "nodemon": "^3.0.1",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.2.2"
+    "ts-node-dev": "^2.0.0"
   }
 }
