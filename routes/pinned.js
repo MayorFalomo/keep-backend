@@ -4,7 +4,7 @@ const Note = require("../models/Note");
 
 router.post("/add-pinned", async (req, res) => {
   try {
-    const { _id } = req.body;
+    const _id = req.body._id;
     // Check if the provided _id exists in the "Note" model
     const existingNote = await Note.findById(_id);
     if (!existingNote) {
@@ -15,6 +15,7 @@ router.post("/add-pinned", async (req, res) => {
     // Create a new pinned note
     const pinned = new Pinned({
       _id: existingNote._id,
+      username: existingNote.username,
       title: existingNote.title,
       note: existingNote.note, // Associate the note field with an existing "Note" document
       picture: existingNote.picture,
@@ -28,7 +29,10 @@ router.post("/add-pinned", async (req, res) => {
       userId: existingNote.userId,
       saved: true,
     });
-    await pinned.save();
+    const pinNote = await Pinned.create(pinned);
+    if (!pinNote) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
     return res.status(200).json({ message: "Note pinned successfully" });
   } catch (err) {
     console.error(err);
@@ -125,11 +129,11 @@ router.get("/pinned-id/:id", async (req, res) => {
 // });
 
 //Remove a Pinned Note
-router.delete("/remove-pinned/:id", async (req, res) => {
+router.post("/remove-pinned/:id", async (req, res) => {
   let id = req.params.id;
   let note;
   try {
-    note = await Pinned.findOneAndRemove({ _id: id });
+    note = await Pinned.findOneAndDelete({ _id: id });
   } catch (err) {
     console.log(err);
   }

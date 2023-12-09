@@ -2,14 +2,14 @@ const mongoose = require("mongoose");
 
 const ArchiveSchema = new mongoose.Schema(
   {
-    id: {
+    _id: {
       type: String,
       required: false,
     },
     username: {
       type: String,
-      required: true,
-      unique: true,
+      required: false,
+      // unique: false,
     },
     userId: {
       type: String,
@@ -55,10 +55,6 @@ const ArchiveSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    // newId: {
-    //   type: String,
-    //   required: false,
-    // },
   },
   { timestamps: true }
 );

@@ -6,6 +6,7 @@ const cors = require("cors");
 const noteRoutes = require("./routes/notes");
 const pinnedRoutes = require("./routes/pinned");
 const archivedRoutes = require("./routes/archive");
+const trashRoutes = require("./routes/trash");
 const userRoutes = require("./routes/users");
 
 dotEnv.config({ path: "./vars/.env" });
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 app.use("/api/notes", noteRoutes);
 app.use("/api/notes", pinnedRoutes);
 app.use("/api/notes", archivedRoutes);
+app.use("/api/notes", trashRoutes);
 app.use("/api/users", userRoutes);
 
 app.listen("5000", () => {

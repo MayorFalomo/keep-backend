@@ -2,14 +2,11 @@ const router = require("express").Router();
 const Archived = require("../models/Archive");
 const Note = require("../models/Note");
 
-router.post("/archived-notes", async (req, res) => {
-  let archived;
-  const noteId = req.body._id;
-  // const session = await mongoose.startSession();
+router.post("/archive-note", async (req, res) => {
   try {
-    archived = new Archived({
-      _id: noteId,
-      userId: req.body.userId, //This would be the users id
+    const archivedNote = {
+      _id: req.body._id,
+      userId: req.body.userId,
       username: req.body.username,
       title: req.body.title,
       note: req.body.note,
@@ -22,40 +19,36 @@ router.post("/archived-notes", async (req, res) => {
       label: req.body.label,
       location: req.body.location,
       createdAt: req.body.createdAt,
-    });
+    };
+
+    // Save to Archived
+    const archived = await Archived.create(archivedNote);
     // console.log(archived);
 
-    // await archived.save()
-    // Save to Archived
-    await archived.save();
+    if (!archived) {
+      return res.status(404).json({ message: "Couldn't add to Archive" });
+    }
 
     // Remove from Note
-    const existingNote = await Note.findById(noteId);
-    // console.log(existingNote, "This is existing note");
+    const existingNote = await Note.findOneAndDelete({ _id: archivedNote._id });
 
     if (!existingNote) {
       return res.status(404).json({ error: "Note not found" });
     }
 
-    // console.log(existingNote._id, "This is existing note id");
-
-    await Note.findByIdAndRemove(existingNote._id);
+    return res.status(200).json({ message: "Note Archived successfully" });
   } catch (err) {
     console.error(err);
     return res.status(400).json({ error: "Error while archiving notes" });
   }
-  if (!archived) {
-    return res.status(404).json({ message: "Couldn't add to Archive" });
-  }
-  return res.status(200).json({ message: "Note Archived successfully" });
 });
 
-router.post("/unarchived-notes", async (req, res) => {
+router.post("/unarchive-note", async (req, res) => {
   let unarchived;
   const noteId = req.body._id;
   try {
     unarchived = new Note({
-      _id: noteId,
+      _id: req.body._id,
       userId: req.body.userId, //This would be the users id
       username: req.body.username,
       title: req.body.title,
@@ -82,7 +75,7 @@ router.post("/unarchived-notes", async (req, res) => {
       return res.status(404).json({ error: "Note not found" });
     }
 
-    await Archived.findByIdAndRemove(existingNote._id);
+    await Archived.findOneAndDelete({ _id: unarchived._id });
   } catch (err) {
     console.error(err);
     return res.status(400).json({ error: "Error while archiving notes" });

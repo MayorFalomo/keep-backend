@@ -26,6 +26,10 @@ const NoteSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    video: {
+      type: String,
+      required: false,
+    },
     canvas: {
       type: Array,
       required: false,
@@ -61,5 +65,7 @@ const NoteSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+// // Add the new field
+// NoteSchema.add({ video: String });
 
 module.exports = mongoose.model("Note", NoteSchema);

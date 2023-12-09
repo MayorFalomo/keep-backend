@@ -568,6 +568,13 @@ router.post("/upload-picture", async (req, res) => {
   }
 });
 
-//UnArchive a note
+// Update all documents to include the new field
+// Note.updateMany({}, { $set: { video: "" } })
+//   .then((result) => {
+//     console.log("Documents updated successfully:", result);
+//   })
+//   .catch((err) => {
+//     console.error("Error updating documents:", err);
+//   });
 
 module.exports = router; // Export the router instance
