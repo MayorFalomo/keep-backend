@@ -544,13 +544,40 @@ router.post("/set-bgimage", async (req, res) => {
 //Route to upload picture and set it to the picture field
 router.post("/upload-picture", async (req, res) => {
   const _id = req.body.id;
-  console.log(_id);
+  // console.log(_id);
 
   try {
     const note = await Note.findById(_id);
 
     if (note) {
       note.picture = req.body.picture;
+      await note.save();
+
+      return res.status(200).json({
+        message: "Background color set successfully",
+        updatedNote: note,
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "Note not found, setting bg failed" });
+    }
+  } catch (err) {
+    // console.error('Error setting background color:', err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//Route to upload picture and set it to the picture field
+router.post("/upload-video", async (req, res) => {
+  const _id = req.body.id;
+  // console.log(_id);
+
+  try {
+    const note = await Note.findById(_id);
+
+    if (note) {
+      note.video = req.body.video;
       await note.save();
 
       return res.status(200).json({
