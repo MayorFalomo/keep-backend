@@ -6,7 +6,7 @@ const cors = require("cors");
 const noteRoutes = require("./routes/notes");
 const pinnedRoutes = require("./routes/pinned");
 const archivedRoutes = require("./routes/archive");
-const trashRoutes = require("./routes/trash");
+const trashRoutes = require("./routes/Trash");
 const userRoutes = require("./routes/users");
 
 dotEnv.config({ path: "./vars/.env" });
