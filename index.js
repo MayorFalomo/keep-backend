@@ -11,7 +11,14 @@ const userRoutes = require("./routes/users");
 
 dotEnv.config({ path: "./vars/.env" });
 app.use(express.json());
-app.use(cors());
+const corsOptions = {
+  origin: "http://localhost:3000",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
 
 mongoose
   .connect(process.env.MONGO_URL)
