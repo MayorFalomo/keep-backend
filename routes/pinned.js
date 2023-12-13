@@ -19,13 +19,15 @@ router.post("/add-pinned", async (req, res) => {
       title: existingNote.title,
       note: existingNote.note, // Associate the note field with an existing "Note" document
       picture: existingNote.picture,
+      video: existingNote.video,
       drawing: existingNote.drawing,
       bgImage: existingNote.bgImage,
       bgColor: existingNote.bgColor,
+      location: existingNote.location,
       remainder: existingNote.remainder,
       collaborator: existingNote.collaborator,
       label: existingNote.label,
-      createdAt: existingNote.createdAt,
+      createdAt: req.body.createdAt,
       userId: existingNote.userId,
       saved: true,
     });
@@ -39,6 +41,15 @@ router.post("/add-pinned", async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+//Update all documents to include the new field
+// Pinned.updateMany({}, { $set: { video: "" } })
+//   .then((result) => {
+//     console.log("Documents updated successfully:", result);
+//   })
+//   .catch((err) => {
+//     console.error("Error updating documents:", err);
+//   });
 
 //Update a note
 router.put("/update-note/:id", async (req, res) => {
@@ -63,23 +74,82 @@ router.put("/update-note/:id", async (req, res) => {
 });
 
 //Route to get all the pinned notes of a singleUser
+// router.get("/getall-pinned-notes/:id", async (req, res) => {
+//   const userId = req.params.id;
+
+//   let pinned;
+//   try {
+//     pinned = await Pinned.find({ userId: userId });
+//     // console.log(pinned);
+//   } catch (err) {
+//     return res.status(404).json({ message: "Unable to find Pinned Notes" });
+//   }
+//   if (!pinned) {
+//     return res.status(404).json({ message: "Can't get this Pinned Notes" });
+//   }
+//   return res.status(200).json(pinned);
+// });
+
 router.get("/getall-pinned-notes/:id", async (req, res) => {
   const userId = req.params.id;
-
-  let pinned;
+  // console.log(userId, "This is userId");
   try {
-    pinned = await Pinned.find({ userId: userId });
-    // console.log(pinned);
+    // Step 1: Find user's pinned notes
+    const userPinnedNotes = await Pinned.find({ userId: userId });
+    // .populate("note")
+    // .exec();
+    // console.log(userPinnedNotes);
+    if (!userPinnedNotes) {
+      return res
+        .status(404)
+        .json({ message: "No Pinned Notes found for the user" });
+    }
+
+    //Step 2 & 3: Update and return the updated pinned notes
+    const updatedPinnedNotes = await Promise.all(
+      //First i map over all the notes in a users pinned notes
+      userPinnedNotes.map(async (pinnedNote) => {
+        //I assign the pinned note Id to the noteId variablr
+        const noteId = pinnedNote._id;
+        // Find the current note with the _id from the Note model
+        const currentNote = await Note.findOne({ _id: noteId });
+        // console.log(currentNote.note, "This is currentNote");
+        if (!currentNote) {
+          return null; // Skip the note if it's not found
+        }
+
+        // Then i'm Updating the Pinned model with the current note
+        pinnedNote.note = currentNote.note;
+        pinnedNote.title = currentNote.title;
+        pinnedNote.picture = currentNote.picture;
+        pinnedNote.video = currentNote.video;
+        pinnedNote.drawing = currentNote.drawing;
+        pinnedNote.bgColor = currentNote.bgImage;
+        pinnedNote.bgColor = currentNote.bgColor;
+        pinnedNote.label = currentNote.label;
+        pinnedNote.location = currentNote.location;
+        pinnedNote.collaborator = currentNote.collaborator;
+        pinnedNote.updatedAt = currentNote.updatedAt;
+        //Then i save the updated pinned note with whatever is in the currentNote field
+        const updatedPinnedNote = await pinnedNote.save();
+        return updatedPinnedNote; //And i return the updatedPinnedNote
+      })
+    );
+
+    //Unnecessary but then i Filter out any null values
+    const filteredUpdatedPinnedNotes = updatedPinnedNotes.filter(
+      (note) => note !== null
+    );
+
+    // Return the updated pinned notes
+    return res.status(200).json(filteredUpdatedPinnedNotes);
   } catch (err) {
-    return res.status(404).json({ message: "Unable to find Pinned Notes" });
+    console.error(err);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-  if (!pinned) {
-    return res.status(404).json({ message: "Can't get this Pinned Notes" });
-  }
-  return res.status(200).json(pinned);
 });
 
-//Route to find pinned of a particular user
+//Route to get a single Pinned note
 router.get("/pinned-id/:id", async (req, res) => {
   const id = req.params.id;
 
