@@ -45,10 +45,10 @@ router.post("/archive-note", async (req, res) => {
 });
 
 router.post("/unarchive-note", async (req, res) => {
-  let unarchived;
+  let unArchived;
   const noteId = req.body._id;
   try {
-    unarchived = new Note({
+    unArchived = new Note({
       _id: req.body._id,
       userId: req.body.userId, //This would be the users id
       username: req.body.username,
@@ -67,7 +67,7 @@ router.post("/unarchive-note", async (req, res) => {
     // console.log(archived);
 
     // Save to Archived
-    await unarchived.save();
+    await unArchived.save();
 
     // Remove from Note
     const existingNote = await Archived.findById(noteId);
@@ -76,12 +76,12 @@ router.post("/unarchive-note", async (req, res) => {
       return res.status(404).json({ error: "Note not found" });
     }
 
-    await Archived.findOneAndDelete({ _id: unarchived._id });
+    await Archived.findOneAndDelete({ unArchived });
   } catch (err) {
     console.error(err);
     return res.status(400).json({ error: "Error while archiving notes" });
   }
-  if (!unarchived) {
+  if (!unArchived) {
     return res.status(404).json({ message: "Couldn't add to Archive" });
   }
   return res.status(200).json({ message: "Note unArchived successfully" });
