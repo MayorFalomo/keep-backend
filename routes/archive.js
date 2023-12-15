@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const Archived = require("../models/Archive");
 const Note = require("../models/Note");
+const Pinned = require("../models/Pinned");
 
 router.post("/archive-note", async (req, res) => {
   try {
@@ -20,16 +21,14 @@ router.post("/archive-note", async (req, res) => {
       location: req.body.location,
       createdAt: req.body.createdAt,
     };
-
     // Save to Archived
     const archived = await Archived.create(archivedNote);
-    // console.log(archived);
 
     if (!archived) {
       return res.status(404).json({ message: "Couldn't add to Archive" });
     }
 
-    // Remove from Note
+    // Remove from Note and Pinned
     const existingNote = await Note.findOneAndDelete({ _id: archivedNote._id });
     const existingPinned = await Pinned.findOneAndDelete({
       _id: archivedNote._id,

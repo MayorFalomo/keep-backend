@@ -58,29 +58,6 @@ router.post("/add-pinned/from-archived", async (req, res) => {
         .json({ message: "Note with the provided _id not found" });
     }
     // Create a new pinned note
-    // const pinned = new Pinned({
-    //   _id: existingNote._id,
-    //   username: existingNote.username,
-    //   title: existingNote.title,
-    //   note: existingNote.note, // Associate the note field with an existing "Note" document
-    //   picture: existingNote.picture,
-    //   video: existingNote.video,
-    //   drawing: existingNote.drawing,
-    //   bgImage: existingNote.bgImage,
-    //   bgColor: existingNote.bgColor,
-    //   location: existingNote.location,
-    //   remainder: existingNote.remainder,
-    //   collaborator: existingNote.collaborator,
-    //   label: existingNote.label,
-    //   createdAt: req.body.createdAt,
-    //   userId: existingNote.userId,
-    //   saved: true,
-    // });
-    // Create a new pinned note
-    // const note = new Note({
-    //   pinned,
-    // });
-    // console.log(pinned);
     const pinNote = await Pinned.create({
       _id: existingNote._id,
       username: existingNote.username,
