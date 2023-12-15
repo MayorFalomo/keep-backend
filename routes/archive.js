@@ -76,7 +76,7 @@ router.post("/unarchive-note", async (req, res) => {
       return res.status(404).json({ error: "Note not found" });
     }
 
-    await Archived.findOneAndDelete({ unArchived });
+    await Archived.findOneAndDelete({ _id: existingNote._id });
   } catch (err) {
     console.error(err);
     return res.status(400).json({ error: "Error while archiving notes" });
