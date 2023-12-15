@@ -31,8 +31,10 @@ router.post("/archive-note", async (req, res) => {
 
     // Remove from Note
     const existingNote = await Note.findOneAndDelete({ _id: archivedNote._id });
-
-    if (!existingNote) {
+    const existingPinned = await Pinned.findOneAndDelete({
+      _id: archivedNote._id,
+    });
+    if (!existingNote && !existingPinned) {
       return res.status(404).json({ error: "Note not found" });
     }
 
