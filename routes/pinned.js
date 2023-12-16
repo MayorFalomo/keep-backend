@@ -77,7 +77,7 @@ router.post("/add-pinned/from-archived", async (req, res) => {
       saved: true,
     });
     const newNote = await Note.create(pinNote);
-    wipeNote = await Archived.findOneAndDelete({ _id: existingNote._id });
+    await Archived.findOneAndDelete({ _id: existingNote._id });
     if (!pinNote && !newNote) {
       return res.status(500).json({ message: "Internal Server Error" });
     }

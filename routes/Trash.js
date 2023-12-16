@@ -2,6 +2,7 @@ const router = require("express").Router();
 const Trash = require("../models/Trash");
 const Note = require("../models/Note");
 const Archive = require("../models/Archive");
+const Pinned = require("../models/Pinned");
 
 router.post("/trash-note", async (req, res) => {
   try {
@@ -40,8 +41,11 @@ router.post("/trash-note", async (req, res) => {
 
     // Remove from Note
     const existingNote = await Note.findOneAndDelete({ _id: trashNote._id });
+    const existingPinnedNote = await Pinned.findOneAndDelete({
+      _id: trashNote._id,
+    });
 
-    if (!existingNote) {
+    if (!existingNote && !existingPinnedNote) {
       return res.status(404).json({ error: "Note not found" });
     }
 
