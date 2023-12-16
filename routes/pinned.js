@@ -3,6 +3,7 @@ const Pinned = require("../models/Pinned");
 const Note = require("../models/Note");
 const Archived = require("../models/Archive");
 
+//Route to add a pin from Note
 router.post("/add-pinned", async (req, res) => {
   try {
     const _id = req.body._id;
@@ -57,6 +58,7 @@ router.post("/add-pinned/from-archived", async (req, res) => {
         .status(404)
         .json({ message: "Note with the provided _id not found" });
     }
+    // console.log(existingNote, "This is exisiting Note");
     // Create a new pinned note
     const pinNote = await Pinned.create({
       _id: existingNote._id,
@@ -76,7 +78,27 @@ router.post("/add-pinned/from-archived", async (req, res) => {
       userId: existingNote.userId,
       saved: true,
     });
-    const newNote = await Note.create(pinNote);
+    await pinNote.save();
+    console.log(pinNote, "This is pinNote");
+    const newNote = await Note.create({
+      _id: existingNote._id,
+      username: existingNote.username,
+      title: existingNote.title,
+      note: existingNote.note, // Associate the note field with an existing "Note" document
+      picture: existingNote.picture,
+      video: existingNote.video,
+      drawing: existingNote.drawing,
+      bgImage: existingNote.bgImage,
+      bgColor: existingNote.bgColor,
+      location: existingNote.location,
+      remainder: existingNote.remainder,
+      collaborator: existingNote.collaborator,
+      label: existingNote.label,
+      createdAt: req.body.createdAt,
+      userId: existingNote.userId,
+      saved: true,
+    });
+    await newNote.save();
     await Archived.findOneAndDelete({ _id: existingNote._id });
     if (!pinNote && !newNote) {
       return res.status(500).json({ message: "Internal Server Error" });
@@ -158,15 +180,16 @@ router.get("/getall-pinned-notes/:id", async (req, res) => {
     const updatedPinnedNotes = await Promise.all(
       //First i map over all the notes in a users pinned notes
       userPinnedNotes.map(async (pinnedNote) => {
-        //I assign the pinned note Id to the noteId variablr
+        // console.log(pinnedNote, "This is pinnedNote");
+        //I assign the pinned note Id to the noteId variable
         const noteId = pinnedNote._id;
+        console.log(noteId);
         // Find the current note with the _id from the Note model
         const currentNote = await Note.findOne({ _id: noteId });
-        // console.log(currentNote.note, "This is currentNote");
+        console.log(currentNote, "This is currentNote");
         if (!currentNote) {
-          return null; // Skip the note if it's not found
+          return pinnedNote; // Skip the note if it's not found
         }
-
         // Then i'm Updating the Pinned model with the current note
         pinnedNote.note = currentNote.note;
         pinnedNote.title = currentNote.title;

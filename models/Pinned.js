@@ -47,7 +47,7 @@ const PinnedSchema = new mongoose.Schema(
       required: false,
     },
     label: {
-      type: String,
+      type: Array,
       required: false,
     },
     location: {
