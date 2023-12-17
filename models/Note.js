@@ -58,14 +58,16 @@ const NoteSchema = new mongoose.Schema(
       type: Array,
       required: false,
     },
-    label: {
+    labels: {
       type: Array,
       required: false,
+      // newLabel: {
+      //   type: Array,
+      //   required: false,
+      // },
     },
   },
   { timestamps: true }
 );
-// // Add the new field
-// NoteSchema.add({ video: String });
 
 module.exports = mongoose.model("Note", NoteSchema);

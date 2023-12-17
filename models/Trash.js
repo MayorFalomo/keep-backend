@@ -51,7 +51,7 @@ const TrashSchema = new mongoose.Schema(
     //   type: String,
     //   required: false,
     // },
-    label: {
+    labels: {
       type: Array,
       required: false,
     },

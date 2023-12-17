@@ -64,7 +64,7 @@ router.post("/send-note", async (req, res) => {
     drawing,
     canvas,
     location,
-    label,
+    labels,
     collaborator,
     createdAt,
   } = req.body;
@@ -91,7 +91,7 @@ router.post("/send-note", async (req, res) => {
       bgImage,
       drawing,
       location,
-      label,
+      labels,
       canvas,
       collaborator: collaborator,
       createdAt,
@@ -154,7 +154,7 @@ router.post("/set-notification/later-today", async (req, res) => {
     bgImage,
     drawing,
     location,
-    label,
+    labels,
     collaborator,
     createdAt,
   } = req.body;
@@ -189,7 +189,7 @@ router.post("/set-notification/later-today", async (req, res) => {
       bgImage,
       location,
       drawing,
-      label,
+      labels,
       collaborator,
       createdAt,
     };
@@ -236,7 +236,7 @@ router.post("/set-notification/tomorrow", async (req, res) => {
     bgImage,
     location,
     drawing,
-    label,
+    labels,
     collaborator,
     createdAt,
   } = req.body;
@@ -271,7 +271,7 @@ router.post("/set-notification/tomorrow", async (req, res) => {
       bgImage,
       drawing,
       location,
-      label,
+      labels,
       collaborator,
       createdAt,
     };
@@ -317,7 +317,7 @@ router.post("/set-notification/next-week", async (req, res) => {
     bgImage,
     location,
     drawing,
-    label,
+    labels,
     collaborator,
     createdAt,
   } = req.body;
@@ -349,7 +349,7 @@ router.post("/set-notification/next-week", async (req, res) => {
       bgImage,
       drawing,
       location,
-      label,
+      labels,
       collaborator,
       createdAt,
     };
@@ -396,7 +396,7 @@ router.post("/set-notification/pick-a-time", async (req, res) => {
     bgImage,
     location,
     drawing,
-    label,
+    labels,
     collaborator,
     createdAt,
   } = req.body;
@@ -426,7 +426,7 @@ router.post("/set-notification/pick-a-time", async (req, res) => {
       bgImage,
       drawing,
       location,
-      label,
+      labels,
       collaborator,
       createdAt,
     };
@@ -592,6 +592,47 @@ router.post("/upload-video", async (req, res) => {
   } catch (err) {
     // console.error('Error setting background color:', err);
     return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//Add labels
+router.post("/add-label", async (req, res) => {
+  const _id = req.body.id;
+  const newlabel = req.body.labels;
+
+  try {
+    const note = await Note.findById(_id);
+
+    if (note) {
+      // Check if the labels already exists
+      const existinglabel = note.labels.find((label) => label.name == newlabel);
+
+      if (existinglabel) {
+        return res.status(400).json({ message: "label already exists" });
+      }
+
+      // Create a new labels object
+      const newlabelObject = {
+        name: newlabel,
+        // Add any other properties you want for the labels object
+      };
+
+      // Push the new labels object to the labelss array
+      note.labels.push(newlabelObject);
+
+      // Save the updated note
+      await note.save();
+
+      return res.status(200).json({
+        message: "labels added successfully",
+        updatedNote: note,
+      });
+    } else {
+      return res.status(404).json({ message: "Note not found" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 

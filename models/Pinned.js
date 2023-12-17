@@ -46,7 +46,7 @@ const PinnedSchema = new mongoose.Schema(
       type: Array,
       required: false,
     },
-    label: {
+    labels: {
       type: Array,
       required: false,
     },

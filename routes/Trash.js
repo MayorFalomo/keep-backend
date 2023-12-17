@@ -18,7 +18,7 @@ router.post("/trash-note", async (req, res) => {
       bgColor: req.body.bgColor,
       remainder: req.body.remainder,
       collaborator: req.body.collaborator,
-      label: req.body.label,
+      labels: req.body.labels,
       location: req.body.location,
       createdAt: req.body.createdAt,
     };
@@ -73,7 +73,7 @@ router.post("/untrash-note", async (req, res) => {
       bgColor: req.body.bgColor,
       remainder: req.body.remainder,
       collaborator: req.body.collaborator,
-      label: req.body.label,
+      labels: req.body.labels,
       location: req.body.location,
       createdAt: req.body.createdAt,
     });
@@ -150,7 +150,7 @@ router.post("/to-trash-archived-note", async (req, res) => {
       bgColor: req.body.bgColor,
       remainder: req.body.remainder,
       collaborator: req.body.collaborator,
-      label: req.body.label,
+      labels: req.body.labels,
       location: req.body.location,
       createdAt: req.body.createdAt,
     };
@@ -201,7 +201,7 @@ router.post("/to-archive-trashed-note", async (req, res) => {
       bgColor: req.body.bgColor,
       remainder: req.body.remainder,
       collaborator: req.body.collaborator,
-      label: req.body.label,
+      labels: req.body.labels,
       location: req.body.location,
       createdAt: req.body.createdAt,
     });
