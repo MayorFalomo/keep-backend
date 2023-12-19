@@ -62,6 +62,10 @@ const PinnedSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    canvas: {
+      type: Array,
+      required: false,
+    },
     pinned: {
       type: Boolean,
       required: false,

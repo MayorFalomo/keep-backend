@@ -47,10 +47,10 @@ const ArchiveSchema = new mongoose.Schema(
       type: Array,
       required: false,
     },
-    //  archivedId: {
-    //   type: String,
-    //   required: false,
-    // },
+    canvas: {
+      type: Array,
+      required: false,
+    },
     label: {
       type: String,
       required: false,

@@ -597,35 +597,48 @@ router.post("/upload-video", async (req, res) => {
 
 //Add labels
 router.post("/add-label", async (req, res) => {
-  const _id = req.body.id;
-  const newlabel = req.body.labels;
-
+  const _id = req.body._id;
+  const newLabel = req.body.label;
   try {
     const note = await Note.findById(_id);
 
     if (note) {
-      // Check if the labels already exists
-      const existinglabel = note.labels.find((label) => label.name == newlabel);
+      // Check if the label already exists
+      const existingLabel = note.labels.find((label) => label == newLabel);
 
-      if (existinglabel) {
-        return res.status(400).json({ message: "label already exists" });
+      if (existingLabel) {
+        return res.status(400).json({ message: "Label already exists" });
       }
 
-      // Create a new labels object
-      const newlabelObject = {
-        name: newlabel,
-        // Add any other properties you want for the labels object
+      // Create a new label object with selected properties
+      const newLabelObject = {
+        name: newLabel,
+        _id: note._id,
+        userId: note.userId,
+        username: note.username,
+        title: note.title,
+        note: note.note,
+        picture: note.picture,
+        bgColor: note.bgColor,
+        bgImage: note.bgImage,
+        drawing: note.drawing,
+        location: note.location,
+        label: newLabel,
+        canvas: note.canvas,
+        collaborator: note.collaborator,
+        createdAt: note.createdAt,
+        // Add any other properties you want to include
       };
 
-      // Push the new labels object to the labelss array
-      note.labels.push(newlabelObject);
+      // Push the new label object to the labels array
+      note.labels.push(newLabelObject);
 
       // Save the updated note
       await note.save();
 
       return res.status(200).json({
-        message: "labels added successfully",
-        updatedNote: note,
+        message: "Label added successfully",
+        // note,
       });
     } else {
       return res.status(404).json({ message: "Note not found" });
@@ -636,8 +649,26 @@ router.post("/add-label", async (req, res) => {
   }
 });
 
+router.post("/save-canvas", async (req, res) => {
+  const _id = req.body._id;
+  const canvas = req.body.canvas;
+
+  try {
+    const note = await Note.findById(_id);
+
+    if (!note) {
+      return res.status(404).json({ message: "Note not found" });
+    }
+    note.canvas.push(canvas);
+    await note.save();
+
+    return res.status(200).json({ message: "Canvas saved successfully" });
+  } catch (err) {
+    console.error(err);
+  }
+});
 // Update all documents to include the new field
-// Note.updateMany({}, { $set: { video: "" } })
+// Note.updateMany({}, { $set: { canvas: [] } })
 //   .then((result) => {
 //     console.log("Documents updated successfully:", result);
 //   })

@@ -47,10 +47,10 @@ const TrashSchema = new mongoose.Schema(
       type: Array,
       required: false,
     },
-    //  archivedId: {
-    //   type: String,
-    //   required: false,
-    // },
+    canvas: {
+      type: Array,
+      required: false,
+    },
     labels: {
       type: Array,
       required: false,
