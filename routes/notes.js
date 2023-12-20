@@ -48,6 +48,7 @@ router.get("/get-note/:id", async (req, res) => {
   return res.status(200).json(note);
 });
 
+//Send note to another user or  or collaborate with another user
 router.post("/send-note", async (req, res) => {
   const {
     _id,
@@ -155,6 +156,7 @@ router.post("/set-notification/later-today", async (req, res) => {
     drawing,
     location,
     labels,
+    canvas,
     collaborator,
     createdAt,
   } = req.body;
@@ -190,6 +192,7 @@ router.post("/set-notification/later-today", async (req, res) => {
       location,
       drawing,
       labels,
+      canvas,
       collaborator,
       createdAt,
     };
@@ -237,6 +240,7 @@ router.post("/set-notification/tomorrow", async (req, res) => {
     location,
     drawing,
     labels,
+    canvas,
     collaborator,
     createdAt,
   } = req.body;
@@ -272,6 +276,7 @@ router.post("/set-notification/tomorrow", async (req, res) => {
       drawing,
       location,
       labels,
+      canvas,
       collaborator,
       createdAt,
     };
@@ -318,6 +323,7 @@ router.post("/set-notification/next-week", async (req, res) => {
     location,
     drawing,
     labels,
+    canvas,
     collaborator,
     createdAt,
   } = req.body;
@@ -350,6 +356,7 @@ router.post("/set-notification/next-week", async (req, res) => {
       drawing,
       location,
       labels,
+      canvas,
       collaborator,
       createdAt,
     };
@@ -397,6 +404,7 @@ router.post("/set-notification/pick-a-time", async (req, res) => {
     location,
     drawing,
     labels,
+    canvas,
     collaborator,
     createdAt,
   } = req.body;
@@ -427,6 +435,7 @@ router.post("/set-notification/pick-a-time", async (req, res) => {
       drawing,
       location,
       labels,
+      canvas,
       collaborator,
       createdAt,
     };
