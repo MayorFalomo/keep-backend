@@ -615,9 +615,10 @@ router.post("/add-label", async (req, res) => {
       // Check if the label already exists
       const existingLabel = note.labels.find((label) => label == newLabel);
 
-      if (existingLabel) {
-        return res.status(400).json({ message: "Label already exists" });
-      }
+      //*check to check if the label already exists
+      // if (existingLabel) {
+      //   return res.status(400).json({ message: "Label already exists" });
+      // }
 
       // Create a new label object with selected properties
       const newLabelObject = {
