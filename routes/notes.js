@@ -604,6 +604,7 @@ router.post("/upload-video", async (req, res) => {
   }
 });
 
+//Why can't you just create a new modal for label: problems: you won't be able to have a note with multiple labels since their id's would be the same when creating to avoid this i could probably assign a different _id to each label when creating a new label note but problem is i could potentially have multiple versions of the same note with the same label and i don't want that
 //Add labels
 router.post("/add-label", async (req, res) => {
   const _id = req.body._id;

@@ -9,7 +9,7 @@ router.post("/register", async (req, res) => {
     //Since we imported User from our User schema component here is where we expect our information to be created for new user hence for example username: request.body(A method).username and so forth
     //This is the object we're directly pushing to mongoDb, we get the request from the frontEnd
     const newUser = new User({
-      _id: req.body.id,
+      _id: req.body._id,
       userId: req.body.userId, //_id is a required field for user to be able to connect to db
       username: req.body.username,
       email: req.body.email,
