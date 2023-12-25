@@ -3,6 +3,7 @@ const Trash = require("../models/Trash");
 const Note = require("../models/Note");
 const Archive = require("../models/Archive");
 const Pinned = require("../models/Pinned");
+var cron = require("node-cron");
 
 router.post("/trash-note", async (req, res) => {
   try {
@@ -33,7 +34,7 @@ router.post("/trash-note", async (req, res) => {
       if (!existingNote) {
         console.log("Note not found");
       }
-    }, 24 * 60 * 60 * 1000); // 1 day in milliseconds
+    }, 60 * 1000); // 1 day in milliseconds
 
     if (!trash) {
       return res.status(404).json({ message: "Couldn't add to Archive" });
@@ -135,6 +136,8 @@ router.delete("/remove-trash/:id", async (req, res) => {
     .json({ message: "Archived note removed successfully" });
 });
 
+// router.delete();
+
 //Create a note to Trash from Archived note
 router.post("/to-trash-archived-note", async (req, res) => {
   try {
@@ -227,5 +230,16 @@ router.post("/to-archive-trashed-note", async (req, res) => {
   }
   return res.status(200).json({ message: "Note unArchived successfully" });
 });
+
+cron.schedule("* * * * *", async () => {
+  try {
+    const result = await Trash.deleteMany({});
+    console.log("Notes deleted successfully:", result);
+  } catch (error) {
+    console.error("Error deleting notes:", error);
+  }
+});
+
+//delete TrashNotes
 
 module.exports = router; // Export the router instance
