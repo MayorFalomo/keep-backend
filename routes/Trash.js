@@ -231,12 +231,22 @@ router.post("/to-archive-trashed-note", async (req, res) => {
   return res.status(200).json({ message: "Note unArchived successfully" });
 });
 
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 0 * * *", async () => {
   try {
     const result = await Trash.deleteMany({});
-    console.log("Notes deleted successfully:", result);
+    console.log("Trash deleted successfully:", result);
   } catch (error) {
     console.error("Error deleting notes:", error);
+  }
+});
+
+router.delete("/empty-trash", async (req, res) => {
+  try {
+    const result = await Trash.deleteMany({});
+    console.log("Trash deleted successfully:", result);
+    return res.status(200).json({ message: "Trash emptied successfully" });
+  } catch {
+    return res.status(400).json({ message: "Error while emptying Trash" });
   }
 });
 
