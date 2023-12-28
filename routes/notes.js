@@ -678,6 +678,51 @@ router.post("/save-canvas", async (req, res) => {
     console.error(err);
   }
 });
+
+//delete canvas
+router.post("/delete-canvas", async (req, res) => {
+  const _id = req.body._id;
+  try {
+    const note = await Note.findById(_id);
+    if (!note) {
+      return res.status(404).json({ message: "Note not found" });
+    }
+    note.canvas = [];
+    await note.save();
+    return res.status(200).json({ message: "Canvas deleted successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.post("/create-note-with-picture", async (req, res) => {
+  const _id = req.body.id;
+
+  const newNote = {
+    // name: newLabel,
+    _id: req.body._id,
+    userId: req.body.userId,
+    username: req.body.username,
+    title: req.body.title,
+    note: req.body.note,
+    picture: req.body.picture,
+    bgColor: req.body.bgColor,
+    bgImage: req.body.bgImage,
+    video: req.body.video,
+    drawing: req.body.drawing,
+    location: req.body.location,
+    label: req.body.label,
+    canvas: req.body.canvas,
+    collaborator: req.body.collaborator,
+    createdAt: req.body.createdAt,
+  };
+
+  try {
+    const newNote = await Note.create();
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+});
 // Update all documents to include the new field
 // Note.updateMany({}, { $set: { canvas: [] } })
 //   .then((result) => {
