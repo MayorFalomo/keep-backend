@@ -2,14 +2,15 @@ const mongoose = require("mongoose");
 
 const LabelSchema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      required: false,
+    },
     username: {
       type: String,
       required: false,
     },
-    id: {
-      type: String,
-      required: false,
-    },
+
     userId: {
       type: String,
       required: true,
@@ -59,7 +60,7 @@ const LabelSchema = new mongoose.Schema(
       required: false,
     },
     label: {
-      type: Array,
+      type: "",
       required: false,
     },
   },

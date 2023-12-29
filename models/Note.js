@@ -61,10 +61,14 @@ const NoteSchema = new mongoose.Schema(
     labels: {
       type: Array,
       required: false,
-      // newLabel: {
-      //   type: Array,
-      //   required: false,
-      // },
+    },
+    labelId: {
+      type: String,
+      required: false,
+    },
+    label: {
+      type: String,
+      required: false,
     },
   },
   { timestamps: true }
