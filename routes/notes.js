@@ -610,34 +610,87 @@ router.post("/add-label", async (req, res) => {
   const _id = req.body._id;
   const labelId = req.body.labelId;
   const label = req.body.label;
-  const newLabel = req.body.label;
+
   try {
-    //Find the note based on the provided id then assign to note
-    const note = await Note.findById(_id);
+    // Check if the label already exists in any notes
+    const existingNotesWithLabel = await Note.find({ label: label });
+    // console.log(existingNotesWithLabel, "existingNotesWithLabel");
 
-    if (note) {
-      // Check if the label already exists and if it does assign it to existingLabel
-      const existingLabel = note.label.find(req.body.label);
-      //if existingLabel is found then set the note.labelId to existingLabel.labelId
-      if (existingLabel) {
-        note.labelId == existingLabel.labelId;
+    // Find the note based on the provided id
+    const foundNote = await Note.findById(_id);
+
+    if (existingNotesWithLabel.length > 0) {
+      // If the label exists in multiple notes, set the label and labelId for each matching note
+      for (const note of existingNotesWithLabel) {
+        note.label = label;
+        note.labelId = labelId;
+        await note.save();
       }
-      note.label = label;
-      note.labelId = labelId;
 
-      // Save the updated note
-      await note.save();
+      // Also, update the note with the provided _id
+      foundNote.label = label;
+      foundNote.labelId = labelId;
+      await foundNote.save();
+
       return res.status(200).json({
-        message: "Label added successfully",
+        message: "Label added successfully to existing notes",
       });
     } else {
-      return res.status(404).json({ message: "Note not found" });
+      // If the label doesn't exist in any notes, update the note based on the provided id
+      foundNote.label = label;
+      foundNote.labelId = labelId;
+
+      // Save the updated note
+      await foundNote.save();
+
+      return res.status(200).json({
+        message: "Label added for new notes",
+      });
     }
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+// router.post("/add-label", async (req, res) => {
+//   const _id = req.body._id;
+//   const labelId = req.body.labelId;
+//   const label = req.body.label;
+
+//   try {
+//     // Check if the label already exists in any notes
+//     const existingNotesWithLabel = await Note.find({ label: label });
+//     console.log(existingNotesWithLabel, "existingNotesWithLabel");
+//     const foundNote = await Note.find({ _id: _id });
+//     console.log(foundNote, "foundNote");
+//     if (existingNotesWithLabel.length > 0) {
+//       // If the label exists in multiple notes i'm setting the label and labelId for each matching note
+//       for (const note of existingNotesWithLabel) {
+//         note.label == foundNote.label;
+//         note.labelId == foundNote.labelId;
+//         await note.save();
+//       }
+
+//       return res.status(200).json({
+//         message: "Label added successfully to existing notes",
+//       });
+//     } else {
+//       // If the label doesn't exist in any notes, find the note based on the provided id
+//       // const note = await Note.findById(_id);
+
+//       foundNote.label == label;
+//       foundNote.labelId == labelId;
+//       // Save the updated note
+//       await foundNote.save();
+//       return res.status(200).json({
+//         message: "Label added for new notes",
+//       });
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
 
 //route to get label of a note
 router.get("/get-label/:id", async (req, res) => {
