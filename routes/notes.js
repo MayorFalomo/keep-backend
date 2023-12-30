@@ -652,45 +652,6 @@ router.post("/add-label", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-// router.post("/add-label", async (req, res) => {
-//   const _id = req.body._id;
-//   const labelId = req.body.labelId;
-//   const label = req.body.label;
-
-//   try {
-//     // Check if the label already exists in any notes
-//     const existingNotesWithLabel = await Note.find({ label: label });
-//     console.log(existingNotesWithLabel, "existingNotesWithLabel");
-//     const foundNote = await Note.find({ _id: _id });
-//     console.log(foundNote, "foundNote");
-//     if (existingNotesWithLabel.length > 0) {
-//       // If the label exists in multiple notes i'm setting the label and labelId for each matching note
-//       for (const note of existingNotesWithLabel) {
-//         note.label == foundNote.label;
-//         note.labelId == foundNote.labelId;
-//         await note.save();
-//       }
-
-//       return res.status(200).json({
-//         message: "Label added successfully to existing notes",
-//       });
-//     } else {
-//       // If the label doesn't exist in any notes, find the note based on the provided id
-//       // const note = await Note.findById(_id);
-
-//       foundNote.label == label;
-//       foundNote.labelId == labelId;
-//       // Save the updated note
-//       await foundNote.save();
-//       return res.status(200).json({
-//         message: "Label added for new notes",
-//       });
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-// });
 
 //route to get label of a note
 router.get("/get-label/:id", async (req, res) => {
@@ -708,11 +669,49 @@ router.get("/get-label/:id", async (req, res) => {
   }
 });
 
+//Route to delete label
+router.post("/delete-label", async (req, res) => {
+  const _id = req.body._id;
+  const labelId = req.body.labelId;
+  const label = req.body.label;
+  try {
+    const note = await Note.findById(_id);
+    if (!note) {
+      return res.status(404).json({ message: "Note not found" });
+    }
+    note.label = "";
+    note.labelId = "";
+    await note.save();
+    return res.status(200).json({ message: "Label deleted successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//Route to edit label
+router.put("/edit-label", async (req, res) => {
+  const _id = req.body._id;
+  const label = req.body.label;
+  const labelId = req.body.labelId;
+  try {
+    const note = await Note.findById(_id);
+    if (!note) {
+      return res.status(404).json({ message: "Note not found" });
+    }
+    note.label = label;
+    note.labelId = labelId;
+    await note.save();
+    console.log(note);
+    return res.status(200).json({ message: "label successfully edited " });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+});
+
+//Route to save canvas
 router.post("/save-canvas", async (req, res) => {
   const _id = req.body._id;
   const canvas = req.body.canvas;
-  // console.log(_id, "id to save");
-  // console.log(canvas, "id to save");
   try {
     const note = await Note.findById(_id);
 
