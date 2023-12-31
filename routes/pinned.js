@@ -31,6 +31,7 @@ router.post("/add-pinned", async (req, res) => {
       label: existingNote.label,
       createdAt: req.body.createdAt,
       userId: existingNote.userId,
+      canvas: existingNote.canvas,
       saved: true,
     });
     const pinNote = await Pinned.create(pinned);

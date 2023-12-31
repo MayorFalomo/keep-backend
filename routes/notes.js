@@ -676,12 +676,14 @@ router.post("/delete-label", async (req, res) => {
   const label = req.body.label;
   try {
     const note = await Note.findById(_id);
+    // console.log(note);
     if (!note) {
       return res.status(404).json({ message: "Note not found" });
     }
-    note.label = "";
-    note.labelId = "";
+    note.label = label;
+    note.labelId = labelId;
     await note.save();
+    log;
     return res.status(200).json({ message: "Label deleted successfully" });
   } catch (err) {
     return res.status(500).json({ message: "Internal Server Error" });
