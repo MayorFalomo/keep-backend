@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const Note = require("../models/Note");
 const User = require("../models/Users");
-
+const Pinned = require("../models/Pinned");
 // Creating a Note
 router.post("/create-note", async (req, res) => {
   const newNote = new Note(req.body);
@@ -127,19 +127,68 @@ router.post("/send-note", async (req, res) => {
 
 //get all notes for a singleUser by their userId
 router.get(`/getall-notes/:userId`, async (req, res) => {
+  //First i get the userId of the current user to call all the notes for that specific user
   const userId = req.params.userId;
   let notes;
   try {
+    //This returns all the notes for that specific user
     notes = await Note.find({ userId }).sort({ createdAt: -1 });
+    // console.log(notes, "All Notes");
+    if (!notes) {
+      return res.status(404).json({ message: "No notes found for this user" });
+    }
+    const updatedNotes = await Promise.all(
+      notes.map(async (note) => {
+        //I assign the pinned note Id to the noteId variable
+        const noteId = note._id;
+        // console.log(noteId, "This is noteId");
+        const currentPinnedNote = await Pinned.findOne({ _id: noteId });
+        if (!currentPinnedNote) {
+          return note;
+        }
+        // console.log(currentPinnedNote, "This is currentPinnedNote");
+        // console.log(currentPinnedNote.bgImage, "This is bgImage");
+        // console.log(note);
+        note.note = currentPinnedNote.note;
+        note.title = currentPinnedNote.title;
+        note.picture = currentPinnedNote.picture
+          ? currentPinnedNote.picture
+          : note.picture;
+        note.video = currentPinnedNote.video
+          ? currentPinnedNote.video
+          : note.video;
+        note.bgColor = currentPinnedNote.bgColor
+          ? currentPinnedNote.bgColor
+          : note.bgColor;
+        note.bgImage = currentPinnedNote.bgImage
+          ? currentPinnedNote.bgImage
+          : note.bgImage;
+        // note.label = currentPinnedNote.label
+        //   ? currentPinnedNote.label
+        //   : note.label;
+        note.location = currentPinnedNote.location
+          ? currentPinnedNote.location
+          : note.location;
+        note.canvas = currentPinnedNote.canvas
+          ? currentPinnedNote.canvas
+          : note.canvas;
+        // note.collaborator = currentPinnedNote.collaborator
+        //   ? currentPinnedNote.collaborator
+        //   : note.collaborator;
+        const updatedNote = await note.save();
+        // console.log(updatedNote);
+        return updatedNote;
+      })
+    );
+    //Unnecessary but then i Filter out any null values
+    const filteredUpdatedPinnedNotes = updatedNotes.filter(
+      (note) => note !== null
+    );
+    return res.status(200).json(updatedNotes);
   } catch (err) {
-    res.status(500).json(err);
+    console.log(err);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-
-  if (!notes) {
-    return res.status(404).json({ message: "No posts found" });
-  }
-
-  return res.status(200).json({ notes });
 });
 
 //Route to set a notification for later today

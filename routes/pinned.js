@@ -28,6 +28,7 @@ router.post("/add-pinned", async (req, res) => {
       location: existingNote.location,
       remainder: existingNote.remainder,
       collaborator: existingNote.collaborator,
+      labelId: existingNote.labelId,
       label: existingNote.label,
       createdAt: req.body.createdAt,
       userId: existingNote.userId,
@@ -75,6 +76,7 @@ router.post("/add-pinned/from-archived", async (req, res) => {
       remainder: existingNote.remainder,
       collaborator: existingNote.collaborator,
       label: existingNote.label,
+      labelId: existingNote.labelId,
       createdAt: req.body.createdAt,
       userId: existingNote.userId,
       saved: true,
@@ -95,6 +97,7 @@ router.post("/add-pinned/from-archived", async (req, res) => {
       remainder: existingNote.remainder,
       collaborator: existingNote.collaborator,
       label: existingNote.label,
+      labelId: existingNote.labelId,
       createdAt: req.body.createdAt,
       userId: existingNote.userId,
       saved: true,
@@ -123,7 +126,7 @@ router.post("/add-pinned/from-archived", async (req, res) => {
 //   });
 
 //Update a note
-router.put("/update-note/:id", async (req, res) => {
+router.put("/update/pinned-note/:id", async (req, res) => {
   //basically we're running an if check before updating the note, to check if it's the actual user
   // console.log(req.body._id, "This is _Id");
   // console.log( req.params.id, "This is Req and params ");
@@ -181,10 +184,8 @@ router.get("/getall-pinned-notes/:id", async (req, res) => {
     const updatedPinnedNotes = await Promise.all(
       //First i map over all the notes in a users pinned notes
       userPinnedNotes.map(async (pinnedNote) => {
-        // console.log(pinnedNote, "This is pinnedNote");
         //I assign the pinned note Id to the noteId variable
         const noteId = pinnedNote._id;
-        console.log(noteId);
         // Find the current note with the _id from the Note model
         const currentNote = await Note.findOne({ _id: noteId });
         console.log(currentNote, "This is currentNote");
@@ -196,11 +197,12 @@ router.get("/getall-pinned-notes/:id", async (req, res) => {
         pinnedNote.title = currentNote.title;
         pinnedNote.picture = currentNote.picture;
         pinnedNote.video = currentNote.video;
-        pinnedNote.drawing = currentNote.drawing;
-        pinnedNote.bgColor = currentNote.bgImage;
         pinnedNote.bgColor = currentNote.bgColor;
+        pinnedNote.bgImage = currentNote.bgImage;
         pinnedNote.label = currentNote.label;
+        pinnedNote.labelId = currentNote.labelId;
         pinnedNote.location = currentNote.location;
+        pinnedNote.canvas = currentNote.canvas;
         pinnedNote.collaborator = currentNote.collaborator;
         pinnedNote.updatedAt = currentNote.updatedAt;
         //Then i save the updated pinned note with whatever is in the currentNote field
@@ -284,6 +286,115 @@ router.post("/remove-pinned/:id", async (req, res) => {
     return res.status(404).json({ message: "Cannot remove Pinned Note" });
   }
   return res.status(200).json({ message: "Pinned Note removed successfully" });
+});
+
+router.post("/set-pinned-bgcolor", async (req, res) => {
+  const _id = req.body.id;
+
+  try {
+    const note = await Pinned.findById(_id);
+
+    if (note) {
+      // console.log(note, "This is the note");
+      // console.log(req.body.bgColor, "This is the color");
+
+      note.bgColor = req.body.bgColor;
+      note.bgImage = " ";
+      await note.save();
+
+      return res.status(200).json({
+        message: "Background color set successfully",
+        updatedNote: note,
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "Note not found, setting bg failed" });
+    }
+  } catch (err) {
+    // console.error('Error setting background color:', err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.post("/set-pinned-bgimage", async (req, res) => {
+  const _id = req.body.id;
+
+  try {
+    const note = await Pinned.findById(_id);
+
+    if (note) {
+      note.bgImage = req.body.bgImage;
+      note.bgColor = " ";
+      await note.save();
+
+      return res.status(200).json({
+        message: "Background color set successfully",
+        updatedNote: note,
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "Note not found, setting bg failed" });
+    }
+  } catch (err) {
+    // console.error('Error setting background color:', err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//Route to upload picture and set it to the picture field
+router.post("pinned/upload-picture", async (req, res) => {
+  const _id = req.body.id;
+  // console.log(_id);
+
+  try {
+    const note = await Note.findById(_id);
+
+    if (note) {
+      note.picture = req.body.picture;
+      await note.save();
+
+      return res.status(200).json({
+        message: "Background color set successfully",
+        updatedNote: note,
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "Note not found, setting bg failed" });
+    }
+  } catch (err) {
+    // console.error('Error setting background color:', err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//Route to upload picture and set it to the picture field
+router.post("/pinned/upload-video", async (req, res) => {
+  const _id = req.body.id;
+  // console.log(_id);
+
+  try {
+    const note = await Note.findById(_id);
+
+    if (note) {
+      note.video = req.body.video;
+      await note.save();
+
+      return res.status(200).json({
+        message: "Background color set successfully",
+        updatedNote: note,
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "Note not found, setting bg failed" });
+    }
+  } catch (err) {
+    // console.error('Error setting background color:', err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
 module.exports = router; // Export the router instance

@@ -71,6 +71,14 @@ const PinnedSchema = new mongoose.Schema(
       required: false,
       default: true,
     },
+    label: {
+      type: String,
+      required: false,
+    },
+    labelId: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,
