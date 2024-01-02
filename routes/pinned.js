@@ -116,6 +116,55 @@ router.post("/add-pinned/from-archived", async (req, res) => {
   }
 });
 
+//Route to add to Pinned and Note from Archived Notes
+router.post("/add-archived/from-pinned", async (req, res) => {
+  let wipeNote;
+  const _id = req.body._id;
+
+  try {
+    // Check if the provided _id exists in the "Note" model
+    const existingNote = await Pinned.findById(_id);
+    if (!existingNote) {
+      return res
+        .status(404)
+        .json({ message: "Note with the provided _id not found" });
+    }
+    //Add Note to Archive
+    const archiveNote = await Archived.create({
+      _id: existingNote._id,
+      username: existingNote.username,
+      title: existingNote.title,
+      note: existingNote.note, // Associate the note field with an existing "Note" document
+      picture: existingNote.picture,
+      video: existingNote.video,
+      drawing: existingNote.drawing,
+      bgImage: existingNote.bgImage,
+      bgColor: existingNote.bgColor,
+      location: existingNote.location,
+      remainder: existingNote.remainder,
+      collaborator: existingNote.collaborator,
+      label: existingNote.label,
+      labelId: existingNote.labelId,
+      createdAt: req.body.createdAt,
+      userId: existingNote.userId,
+      saved: true,
+    });
+    console.log(archiveNote, "ArchiveNote");
+    await archiveNote.save();
+    //Find and delete the note in Pinned and Note
+    await Pinned.findOneAndDelete({ _id: existingNote._id });
+    await Note.findOneAndDelete({ _id: existingNote._id });
+    if (!archiveNote) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+    console.log("Note archived successfully");
+    return res.status(200).json({ message: "Note archived successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 //Update all documents to include the new field
 // Pinned.updateMany({}, { $set: { video: "" } })
 //   .then((result) => {
