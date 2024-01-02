@@ -175,26 +175,61 @@ router.post("/add-archived/from-pinned", async (req, res) => {
 //   });
 
 //Update a note
+// Update a note, either pinned or regular
 router.put("/update/pinned-note/:id", async (req, res) => {
-  //basically we're running an if check before updating the note, to check if it's the actual user
-  // console.log(req.body._id, "This is _Id");
-  // console.log( req.params.id, "This is Req and params ");
-  if (req.body._id == req.params.id) {
-    try {
-      const updatedNote = await Note.findByIdAndUpdate(
-        req.params.id,
-        { $set: req.body },
-        { new: true } //When this line is added whatever you update shows immediately in postman
-      );
-      res.status(200).json(updatedNote);
-      console.log("Updated Note successfully");
-    } catch (err) {
-      res.status(500).json(err);
+  const id = req.params.id;
+  try {
+    // Step 1: Update Pinned Note
+    const updatedPinnedNote = await Pinned.findOneAndUpdate(
+      { _id: id },
+      { $set: req.body },
+      { new: true }
+    );
+
+    // Step 2: Find Matching Note
+    const currentNote = await Note.findOne({ _id: id });
+    if (!currentNote) {
+      return res.status(404).json({ message: "Note not found" });
     }
-  } else {
-    res.status(400).json({ message: "userId does not match" });
+
+    // Step 3: Update Matching Note
+    const updatedNote = await Note.findByIdAndUpdate(
+      id,
+      { $set: req.body },
+      { new: true }
+    );
+
+    // Return both updated note and pinned note
+    res.status(200).json({
+      updatedNote: updatedNote,
+      updatedPinnedNote: updatedPinnedNote,
+    });
+    console.log("Updated Note and Pinned Note successfully");
+  } catch (err) {
+    res.status(500).json(err);
   }
 });
+
+// router.put("/update/pinned-note/:id", async (req, res) => {
+//   //basically we're running an if check before updating the note, to check if it's the actual user
+//   // console.log(req.body._id, "This is _Id");
+//   // console.log( req.params.id, "This is Req and params ");
+//   if (req.body._id == req.params.id) {
+//     try {
+//       const updatedNote = await Note.findByIdAndUpdate(
+//         req.params.id,
+//         { $set: req.body },
+//         { new: true } //When this line is added whatever you update shows immediately in postman
+//       );
+//       res.status(200).json(updatedNote);
+//       console.log("Updated Note successfully");
+//     } catch (err) {
+//       res.status(500).json(err);
+//     }
+//   } else {
+//     res.status(400).json({ message: "userId does not match" });
+//   }
+// });
 
 //Route to get all the pinned notes of a singleUser
 // router.get("/getall-pinned-notes/:id", async (req, res) => {
