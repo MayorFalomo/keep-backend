@@ -798,11 +798,11 @@ router.post("/delete-canvas", async (req, res) => {
 });
 
 router.post("/create-note-with-picture", async (req, res) => {
-  const _id = req.body.id;
+  const id = req.body.id;
 
-  const newNote = {
+  const newNoteObject = {
     // name: newLabel,
-    _id: req.body._id,
+    _id: id,
     userId: req.body.userId,
     username: req.body.username,
     title: req.body.title,
@@ -814,13 +814,19 @@ router.post("/create-note-with-picture", async (req, res) => {
     drawing: req.body.drawing,
     location: req.body.location,
     label: req.body.label,
+    labelId: req.body.labelId,
     canvas: req.body.canvas,
     collaborator: req.body.collaborator,
     createdAt: req.body.createdAt,
   };
+  // console.log(newNoteObject);
 
   try {
-    const newNote = await Note.create();
+    await Note.create(newNoteObject);
+    // newNote.save();
+    return res
+      .status(200)
+      .json({ message: "Note created with picture successfully " });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
