@@ -272,7 +272,7 @@ router.get("/getall-pinned-notes/:id", async (req, res) => {
         const noteId = pinnedNote._id;
         // Find the current note with the _id from the Note model
         const currentNote = await Note.findOne({ _id: noteId });
-        console.log(currentNote, "This is currentNote");
+        // console.log(currentNote, "This is currentNote");
         if (!currentNote) {
           return pinnedNote; // Skip the note if it's not found
         }
@@ -401,6 +401,7 @@ router.post("/set-pinned-bgcolor", async (req, res) => {
   }
 });
 
+//Route to set background image for note
 router.post("/set-pinned-bgimage", async (req, res) => {
   const _id = req.body.id;
 
@@ -433,20 +434,21 @@ router.post("pinned/upload-picture", async (req, res) => {
   // console.log(_id);
 
   try {
-    const note = await Note.findById(_id);
+    const note = await Pinned.findById(_id);
 
     if (note) {
       note.picture = req.body.picture;
+      note.video = req.body.video;
       await note.save();
 
       return res.status(200).json({
-        message: "Background color set successfully",
+        message: "picture uploaded successfully",
         updatedNote: note,
       });
     } else {
       return res
         .status(404)
-        .json({ message: "Note not found, setting bg failed" });
+        .json({ message: "Note not found, picture upload failed" });
     }
   } catch (err) {
     // console.error('Error setting background color:', err);
@@ -460,20 +462,21 @@ router.post("/pinned/upload-video", async (req, res) => {
   // console.log(_id);
 
   try {
-    const note = await Note.findById(_id);
+    const note = await Pinned.findById(_id);
 
     if (note) {
       note.video = req.body.video;
+      note.picture = req.body.picture;
       await note.save();
 
       return res.status(200).json({
-        message: "Background color set successfully",
+        message: "video uploaded successfully",
         updatedNote: note,
       });
     } else {
       return res
         .status(404)
-        .json({ message: "Note not found, setting bg failed" });
+        .json({ message: "Note not found, video upload failed" });
     }
   } catch (err) {
     // console.error('Error setting background color:', err);

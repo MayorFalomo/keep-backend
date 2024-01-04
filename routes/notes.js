@@ -519,6 +519,33 @@ router.post("/set-notification/pick-a-time", async (req, res) => {
   }
 });
 
+//Route to Add Country to a note
+router.put("/add-country/:id", async (req, res) => {
+  const noteId = req.params.id;
+  const location = req.body.location;
+
+  try {
+    // Find the note by ID
+    const note = await Note.findById(noteId);
+    // console.log(note, "This is note");
+    // If the note is found, update the location to an empty string
+    if (note) {
+      note.location = location;
+      console.log(note.location, "location");
+      await note.save();
+
+      return res
+        .status(200)
+        .json({ message: "Location Updated successfully", note });
+    } else {
+      return res.status(404).json({ message: "Note not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 //Route to delete Country from the note
 router.put("/delete-country/:id", async (req, res) => {
   const noteId = req.params.id;
@@ -761,11 +788,12 @@ router.put("/edit-label", async (req, res) => {
 
 //Route to save canvas
 router.post("/save-canvas", async (req, res) => {
-  const _id = req.body._id;
+  const _id = req.body.id;
   const canvas = req.body.canvas;
   try {
+    // console.log(_id, "This is id");
     const note = await Note.findById(_id);
-
+    // console.log(note);
     if (!note) {
       return res.status(404).json({ message: "Note not found" });
     }
