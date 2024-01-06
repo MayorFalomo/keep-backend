@@ -193,6 +193,7 @@ router.get(`/getall-notes/:userId`, async (req, res) => {
 
 //Route to set a notification for later today
 router.post("/set-notification/later-today", async (req, res) => {
+  //get all this object from the req.body
   const {
     _id,
     userId,
@@ -204,7 +205,7 @@ router.post("/set-notification/later-today", async (req, res) => {
     bgImage,
     drawing,
     location,
-    labels,
+    label,
     canvas,
     collaborator,
     createdAt,
@@ -222,10 +223,10 @@ router.post("/set-notification/later-today", async (req, res) => {
     }
 
     const timeUntil8AM = targetTime.getTime() - now.getTime();
-    console.log(timeUntil8AM);
+    console.log(timeUntil8AM, "time until 8am");
 
     // The notification message
-    const notificationMessage = "You have a notification";
+    const notificationMessage = "You have a new notification";
 
     // The notification object with the message and userDetails
     const notification = {
@@ -240,7 +241,7 @@ router.post("/set-notification/later-today", async (req, res) => {
       bgImage,
       location,
       drawing,
-      labels,
+      label,
       canvas,
       collaborator,
       createdAt,
@@ -284,14 +285,16 @@ router.post("/set-notification/tomorrow", async (req, res) => {
     title,
     note,
     picture,
+    video,
     bgColor,
     bgImage,
     location,
     drawing,
-    labels,
+    label,
     canvas,
     collaborator,
     createdAt,
+    remainder,
   } = req.body;
 
   try {
@@ -301,12 +304,10 @@ router.post("/set-notification/tomorrow", async (req, res) => {
     targetTime.setHours(8, 0, 0, 0); // Set time to 8 AM tomorrow
 
     // If the current time is after 8 AM, schedule it for 8 AM tomorrow
-    if (now > targetTime) {
-      targetTime.setDate(now.getDate() + 1);
-    }
+    targetTime.setDate(now.getDate() + 1);
 
-    const timeUntil8AM = targetTime.getTime() - now.getTime();
-    console.log(timeUntil8AM);
+    const tomorrow = targetTime.getTime() - now.getTime();
+    console.log(tomorrow, "this is tomorrow");
 
     // The notification message
     const notificationMessage = "You have a notification";
@@ -320,11 +321,13 @@ router.post("/set-notification/tomorrow", async (req, res) => {
       title,
       note,
       picture,
+      video,
       bgColor,
       bgImage,
       drawing,
       location,
-      labels,
+      label,
+      remainder,
       canvas,
       collaborator,
       createdAt,
@@ -338,7 +341,7 @@ router.post("/set-notification/tomorrow", async (req, res) => {
           { $push: { notifications: notification } },
           { new: true } // To get the updated user document
         );
-        // console.log(user);
+        console.log(user, "new user");
         if (!user) {
           return res.status(404).json({
             message: "Notification with the provided ID already exists",
@@ -348,7 +351,7 @@ router.post("/set-notification/tomorrow", async (req, res) => {
       } catch (error) {
         console.error("Error sending notification:", error);
       }
-    }, timeUntil8AM);
+    }, tomorrow);
 
     return res
       .status(200)
@@ -359,6 +362,7 @@ router.post("/set-notification/tomorrow", async (req, res) => {
   }
 });
 
+//Route to calculate time till next week Monday
 router.post("/set-notification/next-week", async (req, res) => {
   const {
     _id,
@@ -367,11 +371,11 @@ router.post("/set-notification/next-week", async (req, res) => {
     title,
     note,
     picture,
+    video,
     bgColor,
     bgImage,
     location,
-    drawing,
-    labels,
+    label,
     canvas,
     collaborator,
     createdAt,
@@ -400,11 +404,11 @@ router.post("/set-notification/next-week", async (req, res) => {
       title,
       note,
       picture,
+      video,
       bgColor,
       bgImage,
-      drawing,
       location,
-      labels,
+      label,
       canvas,
       collaborator,
       createdAt,
@@ -440,6 +444,7 @@ router.post("/set-notification/next-week", async (req, res) => {
   }
 });
 
+//Route to set notification for custom time
 router.post("/set-notification/pick-a-time", async (req, res) => {
   const {
     _id,
@@ -448,23 +453,32 @@ router.post("/set-notification/pick-a-time", async (req, res) => {
     title,
     note,
     picture,
+    video,
     bgColor,
     bgImage,
     location,
-    drawing,
-    labels,
+    label,
+    labelId,
     canvas,
     collaborator,
     createdAt,
+    time,
   } = req.body;
 
-  try {
-    const time = new Date(req.body.time); // Get the time value from req.body
+  // Validate that time is provided
+  if (!time) {
+    return res.status(400).json({ message: "Time is required" });
+  }
 
-    // console.log(time, "This is time");
+  try {
+    // const time = new Date(time);
+
+    // Parse the time value
+    const scheduledTime = new Date(time); // Get the time value from req.body
+    // console.log(scheduledTime, "This is scheduled time");
 
     const now = new Date();
-    const timeUntilNotification = time.getTime() - now.getTime();
+    const timeUntilNotification = scheduledTime.getTime() - now.getTime();
     console.log(timeUntilNotification, "Time until notification");
 
     // The notification message
@@ -479,11 +493,12 @@ router.post("/set-notification/pick-a-time", async (req, res) => {
       title,
       note,
       picture,
+      video,
       bgColor,
       bgImage,
-      drawing,
       location,
-      labels,
+      label,
+      labelId,
       canvas,
       collaborator,
       createdAt,
@@ -499,7 +514,7 @@ router.post("/set-notification/pick-a-time", async (req, res) => {
           { new: true } // To get the updated user document
         );
 
-        console.log("Notification sent:", notification);
+        // console.log("Notification sent:", notification);
         if (!user) {
           return res.status(404).json({
             message: "Notification with the provided ID already exists",
@@ -832,7 +847,39 @@ router.post("/create-note-with-picture", async (req, res) => {
     // name: newLabel,
     _id: id,
     userId: req.body.userId,
-    username: req.body.username,
+    title: req.body.title,
+    note: req.body.note,
+    picture: req.body.picture,
+    bgColor: req.body.bgColor,
+    bgImage: req.body.bgImage,
+    video: req.body.video,
+    location: req.body.location,
+    label: req.body.label,
+    labelId: req.body.labelId,
+    canvas: req.body.canvas,
+    collaborator: req.body.collaborator,
+    createdAt: req.body.createdAt,
+  };
+  // console.log(newNoteObject);
+
+  try {
+    await Note.create(newNoteObject);
+    // newNote.save();
+    return res
+      .status(200)
+      .json({ message: "Note created with picture successfully " });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+});
+
+router.post("/create-note-with-canvas", async (req, res) => {
+  const id = req.body._id;
+
+  const newNoteObject = {
+    // name: newLabel,
+    _id: id,
+    userId: req.body.userId,
     title: req.body.title,
     note: req.body.note,
     picture: req.body.picture,
@@ -854,11 +901,25 @@ router.post("/create-note-with-picture", async (req, res) => {
     // newNote.save();
     return res
       .status(200)
-      .json({ message: "Note created with picture successfully " });
+      .json({ message: "Note created with canvas successfully " });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 });
+
+//Route to save canvas
+// router.post("/create-note-with-canvas", async (req, res) => {
+//   const newNote = new Note(req.body);
+//   try {
+//     const savedNote = await newNote.save();
+//     console.log(savedNote, "Saved Note");
+//     res.status(200).json(savedNote);
+
+//     return res.status(200).json({ message: "Canvas note saved successfully" });
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
 // Update all documents to include the new field
 // Note.updateMany({}, { $set: { label: "" } })
 //   .then((result) => {

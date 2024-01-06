@@ -243,7 +243,7 @@ cron.schedule("0 0 * * *", async () => {
 router.delete("/empty-trash", async (req, res) => {
   try {
     const result = await Trash.deleteMany({});
-    console.log("Trash deleted successfully:", result);
+    // console.log("Trash deleted successfully:", result);
     return res.status(200).json({ message: "Trash emptied successfully" });
   } catch {
     return res.status(400).json({ message: "Error while emptying Trash" });
