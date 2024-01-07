@@ -17,7 +17,7 @@ router.post("/register", async (req, res) => {
       profilePic: req.body.profilePic,
       notifications: req.body.notifications,
     });
-    // console.log(newUser);
+    console.log(newUser);
     //Here we assign the newly created user to the user variable and save() which is a mongoose method), Then we say the res.user should come in json file
     const user = await newUser.save();
     // console.log(user, "I am user")
@@ -34,8 +34,8 @@ router.post("/login/", async (req, res) => {
   let user;
 
   try {
-    user = await User.findById(userId);
-    // console.log(user);
+    user = await User.findOne(userId);
+    console.log(user);
   } catch (error) {
     return res.status(404).json({ message: "Something went wrong." });
   }
@@ -50,6 +50,7 @@ router.post("/login/", async (req, res) => {
 router.get("/get-user/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
+    console.log(user, "I am user");
     const { password, ...others } = user._doc;
     res.status(200).json(others);
     //This way hides password
@@ -59,13 +60,15 @@ router.get("/get-user/:id", async (req, res) => {
 });
 
 //Get a user
-router.get("/get-user/:id", async (req, res) => {
+router.get("/get-user/uid/:id", async (req, res) => {
+  const userId = req.params.id;
+  console.log(userId);
   try {
     // const user = await User.findById(req.params.userId)
-    const userId = req.params.id; // Get the userId from the URL parameters
+    // const userId = req.params.id; // Get the userId from the URL parameters
     const user = await User.findOne({ userId: userId }); // Use findOne to find the user by the userId field
-    const { password, ...others } = user._doc;
-    res.status(200).json(others);
+    // const { password, ...others } = user._doc;
+    res.status(200).json(user);
     //This way hides password
   } catch (err) {
     res.status(500).json(err);
