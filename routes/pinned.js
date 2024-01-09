@@ -254,7 +254,9 @@ router.get("/getall-pinned-notes/:id", async (req, res) => {
   // console.log(userId, "This is userId");
   try {
     // Step 1: Find user's pinned notes
-    const userPinnedNotes = await Pinned.find({ userId: userId });
+    const userPinnedNotes = await Pinned.find({ userId: userId }).sort({
+      createdAt: -1,
+    });
     // .populate("note")
     // .exec();
     // console.log(userPinnedNotes);
