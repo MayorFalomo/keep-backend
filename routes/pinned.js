@@ -69,7 +69,7 @@ router.post("/add-pinned/from-archived", async (req, res) => {
       note: existingNote.note, // Associate the note field with an existing "Note" document
       picture: existingNote.picture,
       video: existingNote.video,
-      drawing: existingNote.drawing,
+      canvas: existingNote.canvas,
       bgImage: existingNote.bgImage,
       bgColor: existingNote.bgColor,
       location: existingNote.location,
@@ -137,7 +137,7 @@ router.post("/add-archived/from-pinned", async (req, res) => {
       note: existingNote.note, // Associate the note field with an existing "Note" document
       picture: existingNote.picture,
       video: existingNote.video,
-      drawing: existingNote.drawing,
+      canvas: existingNote.canvas,
       bgImage: existingNote.bgImage,
       bgColor: existingNote.bgColor,
       location: existingNote.location,
@@ -399,6 +399,31 @@ router.post("/set-pinned-bgcolor", async (req, res) => {
     }
   } catch (err) {
     // console.error('Error setting background color:', err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//Route to delete Country from the note
+router.put("/delete-country/from-pinned/:id", async (req, res) => {
+  const noteId = req.params.id;
+
+  try {
+    // Find the note by ID
+    const note = await Note.findById(noteId);
+
+    // If the note is found, update the location to an empty string
+    if (note) {
+      note.location = "";
+      await note.save();
+
+      return res
+        .status(200)
+        .json({ message: "Country deleted successfully", note });
+    } else {
+      return res.status(404).json({ message: "Note not found" });
+    }
+  } catch (error) {
+    console.error(error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
