@@ -5,6 +5,7 @@ const Archive = require("../models/Archive");
 const Pinned = require("../models/Pinned");
 var cron = require("node-cron");
 
+//Route to add to Trash and delete after one day
 router.post("/trash-note", async (req, res) => {
   try {
     const trashNote = {
@@ -14,12 +15,12 @@ router.post("/trash-note", async (req, res) => {
       title: req.body.title,
       note: req.body.note,
       picture: req.body.picture,
-      drawing: req.body.drawing,
+      canvas: req.body.canvas,
       bgImage: req.body.bgImage,
       bgColor: req.body.bgColor,
       remainder: req.body.remainder,
       collaborator: req.body.collaborator,
-      labels: req.body.labels,
+      label: req.body.label,
       location: req.body.location,
       createdAt: req.body.createdAt,
     };
@@ -27,14 +28,14 @@ router.post("/trash-note", async (req, res) => {
     // Save to Trash
     const trash = await Trash.create(trashNote);
 
-    // Remove from Note after 1 day
-    setTimeout(async () => {
-      const existingNote = await Trash.findOneAndDelete({ _id: trashNote._id });
+    // // Remove from Note after 1 day
+    // setTimeout(async () => {
+    //   const existingNote = await Trash.findOneAndDelete({ _id: trashNote._id });
 
-      if (!existingNote) {
-        console.log("Note not found");
-      }
-    }, 60 * 1000); // 1 day in milliseconds
+    //   if (!existingNote) {
+    //     console.log("Note not found");
+    //   }
+    // }, 60 * 1000); // 1 day in milliseconds
 
     if (!trash) {
       return res.status(404).json({ message: "Couldn't add to Archive" });
@@ -57,7 +58,7 @@ router.post("/trash-note", async (req, res) => {
   }
 });
 
-//Restore a note in Trash to Note
+//Restore a note in Trash to Note by creating the note then deleting it from trash
 router.post("/untrash-note", async (req, res) => {
   let unTrashed;
   const noteId = req.body._id;
@@ -69,12 +70,13 @@ router.post("/untrash-note", async (req, res) => {
       title: req.body.title,
       note: req.body.note,
       picture: req.body.picture,
-      drawing: req.body.drawing,
+      canvas: req.body.canvas,
       bgImage: req.body.bgImage,
       bgColor: req.body.bgColor,
       remainder: req.body.remainder,
       collaborator: req.body.collaborator,
-      labels: req.body.labels,
+      label: req.body.label,
+      labelId: req.body.labelId,
       location: req.body.location,
       createdAt: req.body.createdAt,
     });
@@ -105,8 +107,9 @@ router.post("/untrash-note", async (req, res) => {
 });
 
 //Get a users notes in Trash
-router.get("/get-trash/:id", async (req, res) => {
-  const userId = req.params.id;
+router.get("/get-trash/:userId", async (req, res) => {
+  const userId = req.params.userId;
+  // console.log(userId, "UserId");
   let trash;
   try {
     trash = await Trash.find({ userId: userId });
@@ -116,7 +119,23 @@ router.get("/get-trash/:id", async (req, res) => {
   if (!trash) {
     return res.status(404).json({ message: "Can't get this Archive Notes" });
   }
+  // console.log(trash, "trashed");
   return res.status(200).json(trash);
+});
+
+//Trash a Note
+router.delete("/delete-forever/:id", async (req, res) => {
+  let noteId = req.params.id;
+  let note;
+  try {
+    note = await Trash.findOneAndDelete({ noteId: noteId });
+  } catch (err) {
+    console.log(err);
+  }
+  if (!note) {
+    return res.status(404).json({ message: "Cannot remove trashed" });
+  }
+  return res.status(200).json({ message: "Trashed note removed successfully" });
 });
 
 //Trash a Note
@@ -148,12 +167,13 @@ router.post("/to-trash-archived-note", async (req, res) => {
       title: req.body.title,
       note: req.body.note,
       picture: req.body.picture,
-      drawing: req.body.drawing,
+      canvas: req.body.canvas,
       bgImage: req.body.bgImage,
       bgColor: req.body.bgColor,
       remainder: req.body.remainder,
       collaborator: req.body.collaborator,
-      labels: req.body.labels,
+      label: req.body.label,
+      labelId: req.body.labelId,
       location: req.body.location,
       createdAt: req.body.createdAt,
     };
@@ -199,12 +219,13 @@ router.post("/to-archive-trashed-note", async (req, res) => {
       title: req.body.title,
       note: req.body.note,
       picture: req.body.picture,
-      drawing: req.body.drawing,
+      canvas: req.body.canvas,
       bgImage: req.body.bgImage,
       bgColor: req.body.bgColor,
       remainder: req.body.remainder,
       collaborator: req.body.collaborator,
-      labels: req.body.labels,
+      label: req.body.label,
+      labelId: req.body.labelId,
       location: req.body.location,
       createdAt: req.body.createdAt,
     });
@@ -250,6 +271,11 @@ router.delete("/empty-trash", async (req, res) => {
   }
 });
 
+// router.post("/restore-note", async (req, res) => {
+//   try {
+
+//   }
+// })
 //delete TrashNotes
 
 module.exports = router; // Export the router instance

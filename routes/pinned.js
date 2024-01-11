@@ -2,7 +2,7 @@ const router = require("express").Router();
 const Pinned = require("../models/Pinned");
 const Note = require("../models/Note");
 const Archived = require("../models/Archive");
-
+const Trashed = require("../models/Trash");
 //Route to add a pin from Note
 router.post("/add-pinned", async (req, res) => {
   try {
@@ -104,6 +104,75 @@ router.post("/add-pinned/from-archived", async (req, res) => {
     });
     await newNote.save();
     await Archived.findOneAndDelete({ _id: existingNote._id });
+    if (!pinNote && !newNote) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+    return res
+      .status(200)
+      .json({ message: "Note pinned and removed from archive successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//Route to add to Pinned and Note from Archived Notes
+router.post("/add-pinned/from-trash", async (req, res) => {
+  let wipeNote;
+  try {
+    const _id = req.body._id;
+
+    // Check if the provided _id exists in the "Note" model
+    const existingNote = await Trashed.findById(_id);
+    if (!existingNote) {
+      return res
+        .status(404)
+        .json({ message: "Note with the provided _id not found" });
+    }
+    // console.log(existingNote, "This is exisiting Note");
+    // Create a new pinned note
+    const pinNote = await Pinned.create({
+      _id: existingNote._id,
+      username: existingNote.username,
+      title: existingNote.title,
+      note: existingNote.note, // Associate the note field with an existing "Note" document
+      picture: existingNote.picture,
+      video: existingNote.video,
+      canvas: existingNote.canvas,
+      bgImage: existingNote.bgImage,
+      bgColor: existingNote.bgColor,
+      location: existingNote.location,
+      remainder: existingNote.remainder,
+      collaborator: existingNote.collaborator,
+      label: existingNote.label,
+      labelId: existingNote.labelId,
+      createdAt: req.body.createdAt,
+      userId: existingNote.userId,
+      saved: true,
+    });
+    await pinNote.save();
+    console.log(pinNote, "This is pinNote");
+    const newNote = await Note.create({
+      _id: existingNote._id,
+      username: existingNote.username,
+      title: existingNote.title,
+      note: existingNote.note, // Associate the note field with an existing "Note" document
+      picture: existingNote.picture,
+      video: existingNote.video,
+      drawing: existingNote.drawing,
+      bgImage: existingNote.bgImage,
+      bgColor: existingNote.bgColor,
+      location: existingNote.location,
+      remainder: existingNote.remainder,
+      collaborator: existingNote.collaborator,
+      label: existingNote.label,
+      labelId: existingNote.labelId,
+      createdAt: req.body.createdAt,
+      userId: existingNote.userId,
+      saved: true,
+    });
+    await newNote.save();
+    await Trashed.findOneAndDelete({ _id: existingNote._id });
     if (!pinNote && !newNote) {
       return res.status(500).json({ message: "Internal Server Error" });
     }
