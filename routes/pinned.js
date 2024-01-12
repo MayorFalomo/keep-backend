@@ -255,7 +255,7 @@ router.put("/update/pinned-note/:id", async (req, res) => {
       { new: true }
     );
 
-    // Step 2: Find Matching Note
+    // Step 2: Find the Matching Note in Note
     const currentNote = await Note.findOne({ _id: id });
     if (!currentNote) {
       return res.status(404).json({ message: "Note not found" });

@@ -88,11 +88,13 @@ router.post("/unarchive-note", async (req, res) => {
   return res.status(200).json({ message: "Note unArchived successfully" });
 });
 
+//Route to get a single Archived Note
 router.get("/get-archived/:id", async (req, res) => {
-  const userId = req.params.id;
+  const id = req.params.id;
+  // console.log(id, "This is id");
   let archived;
   try {
-    archived = await Archived.find({ userId: userId });
+    archived = await Archived.findById(id);
   } catch (err) {
     return res.status(404).json({ message: "Unable to find archived Notes" });
   }
