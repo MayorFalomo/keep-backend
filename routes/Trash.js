@@ -124,11 +124,12 @@ router.get("/get-trash/:userId", async (req, res) => {
 });
 
 //Trash a Note
-router.delete("/delete-forever/:id", async (req, res) => {
-  let noteId = req.params.id;
+router.post("/delete-forever/:id", async (req, res) => {
+  let id = req.params.id;
   let note;
+  // console.log(id, "Trash id");
   try {
-    note = await Trash.findOneAndDelete({ noteId: noteId });
+    note = await Trash.findOneAndDelete({ _id: id });
   } catch (err) {
     console.log(err);
   }

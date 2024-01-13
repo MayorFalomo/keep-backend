@@ -3,6 +3,7 @@ const Archived = require("../models/Archive");
 const Note = require("../models/Note");
 const Pinned = require("../models/Pinned");
 
+//Route to archive a note
 router.post("/archive-note", async (req, res) => {
   try {
     const archivedNote = {
@@ -13,12 +14,13 @@ router.post("/archive-note", async (req, res) => {
       note: req.body.note,
       picture: req.body.picture,
       video: req.body.video,
-      drawing: req.body.drawing,
+      canvas: req.body.canvas,
       bgImage: req.body.bgImage,
       bgColor: req.body.bgColor,
       remainder: req.body.remainder,
       collaborator: req.body.collaborator,
       label: req.body.label,
+      labelId: req.body.labelId,
       location: req.body.location,
       createdAt: req.body.createdAt,
     };
@@ -45,6 +47,7 @@ router.post("/archive-note", async (req, res) => {
   }
 });
 
+//Route to unarchive note
 router.post("/unarchive-note", async (req, res) => {
   let unArchived;
   const noteId = req.body._id;
@@ -56,7 +59,8 @@ router.post("/unarchive-note", async (req, res) => {
       title: req.body.title,
       note: req.body.note,
       picture: req.body.picture,
-      drawing: req.body.drawing,
+      video: req.body.video,
+      canvas: req.body.canvas,
       bgImage: req.body.bgImage,
       bgColor: req.body.bgColor,
       remainder: req.body.remainder,
@@ -119,6 +123,130 @@ router.delete("/remove-archived/:id", async (req, res) => {
   return res
     .status(200)
     .json({ message: "Archived note removed successfully" });
+});
+
+//Route to get all a note
+router.get("/getall-archived/:id", async (req, res) => {
+  let userId = req.params.id;
+  let archived;
+  try {
+    archived = await Archived.find({ userId: userId });
+    if (!userId) {
+      return res.status(404).json({ message: "Cannot get Archived Notes" });
+    }
+    return res.status(200).json(archived);
+  } catch (error) {
+    return res.status(404).json({ message: "Couldn't get Archived Notes" });
+  }
+});
+
+router.post("/archived/set-bgcolor", async (req, res) => {
+  const _id = req.body.id;
+
+  try {
+    const note = await Archived.findById(_id);
+
+    if (note) {
+      // console.log(note, "This is the note");
+      // console.log(req.body.bgColor, "This is the color");
+
+      note.bgColor = req.body.bgColor;
+      note.bgImage = " ";
+      await note.save();
+
+      return res.status(200).json({
+        message: "Background color set successfully",
+        updatedNote: note,
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "Note not found, setting bg failed" });
+    }
+  } catch (err) {
+    // console.error('Error setting background color:', err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.post("/archived/set-bgimage", async (req, res) => {
+  const _id = req.body.id;
+
+  try {
+    const note = await Archived.findById(_id);
+
+    if (note) {
+      note.bgImage = req.body.bgImage;
+      note.bgColor = " ";
+      await note.save();
+
+      return res.status(200).json({
+        message: "Background color set successfully",
+        updatedNote: note,
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "Note not found, setting bg failed" });
+    }
+  } catch (err) {
+    // console.error('Error setting background color:', err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//Route to upload picture and set it to the picture field
+router.post("/archived/upload-picture", async (req, res) => {
+  const _id = req.body.id;
+  // console.log(_id);
+
+  try {
+    const note = await Archived.findById(_id);
+
+    if (note) {
+      note.picture = req.body.picture;
+      await note.save();
+
+      return res.status(200).json({
+        message: "Background color set successfully",
+        updatedNote: note,
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "Note not found, setting bg failed" });
+    }
+  } catch (err) {
+    // console.error('Error setting background color:', err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+//Route to upload picture and set it to the picture field
+router.post("/archived/upload-video", async (req, res) => {
+  const _id = req.body.id;
+  // console.log(_id);
+
+  try {
+    const note = await Archived.findById(_id);
+
+    if (note) {
+      note.video = req.body.video;
+      await note.save();
+
+      return res.status(200).json({
+        message: "Background color set successfully",
+        updatedNote: note,
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "Note not found, setting bg failed" });
+    }
+  } catch (err) {
+    // console.error('Error setting background color:', err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
 module.exports = router; // Export the router instance
