@@ -58,10 +58,10 @@ const NoteSchema = new mongoose.Schema(
       type: Array,
       required: false,
     },
-    labels: {
-      type: Array,
-      required: false,
-    },
+    // labels: {
+    //   type: Array,
+    //   required: false,
+    // },
     labelId: {
       type: String,
       required: false,

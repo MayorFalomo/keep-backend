@@ -595,24 +595,25 @@ router.post("/set-bgimage", async (req, res) => {
 
 //Route to upload picture and set it to the picture field
 router.post("/upload-picture", async (req, res) => {
-  const _id = req.body.id;
-  // console.log(_id);
+  const _id = req.body._id;
+  console.log(_id, "This is _id");
 
   try {
     const note = await Note.findById(_id);
-
+    console.log(note, "This is note");
     if (note) {
       note.picture = req.body.picture;
+      note.video = req.body.video;
       await note.save();
 
       return res.status(200).json({
-        message: "Background color set successfully",
-        updatedNote: note,
+        // message: "picture uploaded successfully",
+        note,
       });
     } else {
       return res
         .status(404)
-        .json({ message: "Note not found, setting bg failed" });
+        .json({ message: "Note not found, uploading pictuing failed" });
     }
   } catch (err) {
     // console.error('Error setting background color:', err);
@@ -630,16 +631,17 @@ router.post("/upload-video", async (req, res) => {
 
     if (note) {
       note.video = req.body.video;
+      note.picture = req.body.picture;
       await note.save();
 
       return res.status(200).json({
-        message: "Background color set successfully",
-        updatedNote: note,
+        // message: "video uploaded successfully",
+        note,
       });
     } else {
       return res
         .status(404)
-        .json({ message: "Note not found, setting bg failed" });
+        .json({ message: "Note not found, uploading video failed" });
     }
   } catch (err) {
     // console.error('Error setting background color:', err);
@@ -858,6 +860,38 @@ router.post("/create-note-with-canvas", async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 });
+
+//Search
+router.get("/search-notes", async (req, res) => {
+  try {
+    const searchQuery = req.query.searchQuery; // Get the search string from the query parameters
+
+    const searchResults = await Note.findOne({
+      $or: [
+        { note: { $regex: searchQuery, $options: "i" } }, // Search for the searchQuery in the note field
+        { title: { $regex: searchQuery, $options: "i" } }, // Search for the searchQuery in the title field
+      ],
+    });
+
+    res.json({ searchResults });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// router.get("/search-notes", async (req, res) => {
+//   try {
+//     const note = req.query.note; // Get the search string from the query parameters
+
+//     const searchResults = await Note.findOne({});
+
+//     res.json({ searchResults });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 //Route to save canvas
 // router.post("/create-note-with-canvas", async (req, res) => {
