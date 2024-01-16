@@ -2,6 +2,7 @@ const router = require("express").Router();
 const Note = require("../models/Note");
 const User = require("../models/Users");
 const Pinned = require("../models/Pinned");
+const Trash = require("../models/Trash");
 // Creating a Note
 router.post("/create-note", async (req, res) => {
   const newNote = new Note(req.body);
@@ -880,18 +881,81 @@ router.get("/search-notes", async (req, res) => {
   }
 });
 
-// router.get("/search-notes", async (req, res) => {
+router.post("/trash/selected-notes", async (req, res) => {
+  try {
+    const { arrayOfTrashIds } = req.body;
+
+    //Find all the notes in the array first
+    const findNotesInTheArray = await Note.find({
+      _id: { $in: arrayOfTrashIds },
+    });
+
+    // console.log(findNotesInTheArray, "Find notes in the array");
+    //Next i map over it and create a new array of objects
+    const trashNotesData = findNotesInTheArray.map((note) => {
+      return {
+        _id: note._id,
+        userId: note.userId,
+        title: note.title,
+        note: note.note,
+        picture: note.picture,
+        bgColor: note.bgColor,
+        bgImage: note.bgImage,
+        video: note.video,
+        location: note.location,
+        label: note.label,
+        labelId: note.labelId,
+        canvas: note.canvas,
+        collaborator: note.collaborator,
+        createdAt: note.createdAt,
+        remainder: note.remainder,
+      };
+    });
+
+    //Insert into Trash
+    await Trash.insertMany(trashNotesData);
+    //Then i delete the notes from my Note
+    await Note.deleteMany({ _id: { $in: arrayOfTrashIds } });
+
+    // await Note.deleteMany({ _id: { $in: arrayOfTrashIds } });
+
+    res.status(200).json({ message: "Selected notes trashed successfully" });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// route to delete multiple notes at once
+// router.post("/trash/selected-notes", async (req, res) => {
 //   try {
-//     const note = req.query.note; // Get the search string from the query parameters
+//     const { arrayOfTrashIds } = req.body;
 
-//     const searchResults = await Note.findOne({});
+//     await Note.deleteMany({ _id: { $in: arrayOfTrashIds } });
 
-//     res.json({ searchResults });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Internal Server Error" });
+//     res.status(200).json({ message: "Selected notes trashed successfully" });
+//   } catch (err) {
+//     console.log(err);
 //   }
 // });
+
+router.post("/update/selected-bgcolor", async (req, res) => {
+  try {
+    const { arrayOfNoteIds, newBgColor } = req.body;
+
+    // Update the 'bgColor' field for each matching note
+    const result = await Note.updateMany(
+      { _id: { $in: arrayOfNoteIds } },
+      { $set: { bgColor: newBgColor } }
+    );
+
+    console.log(result);
+
+    res.status(200).json({ message: "BgColor updated successfully" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 //Route to save canvas
 // router.post("/create-note-with-canvas", async (req, res) => {

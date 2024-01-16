@@ -91,8 +91,8 @@ router.get("/search", async (req, res) => {
 });
 
 //Update a users info
-router.put("/:id", async (req, res) => {
-  if (req.body.userId == req.params.id) {
+router.put("/update-userinfo/:id", async (req, res) => {
+  if (req.body._id == req.params.id) {
     try {
       const updatedNote = await User.findByIdAndUpdate(
         req.params.id,
