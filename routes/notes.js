@@ -2,6 +2,7 @@ const router = require("express").Router();
 const Note = require("../models/Note");
 const User = require("../models/Users");
 const Pinned = require("../models/Pinned");
+const Archive = require("../models/Archive");
 const Trash = require("../models/Trash");
 // Creating a Note
 router.post("/create-note", async (req, res) => {
@@ -916,6 +917,127 @@ router.post("/trash/selected-notes", async (req, res) => {
     await Trash.insertMany(trashNotesData);
     //Then i delete the notes from my Note
     await Note.deleteMany({ _id: { $in: arrayOfTrashIds } });
+
+    // await Note.deleteMany({ _id: { $in: arrayOfTrashIds } });
+
+    res.status(200).json({ message: "Selected notes trashed successfully" });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.get("/get-selected/pinned-notes", async (req, res) => {
+  try {
+    const { arrayOfIds } = req.body;
+    const getAllNotesIdsInArray = await Note.find({ _id: arrayOfIds });
+
+    const gottenNotes = getAllNotesIdsInArray.map((note) => {
+      return {
+        _id: note._id,
+        userId: note.userId,
+        title: note.title,
+        note: note.note,
+        picture: note.picture,
+        bgColor: note.bgColor,
+        bgImage: note.bgImage,
+        video: note.video,
+        location: note.location,
+        label: note.label,
+        labelId: note.labelId,
+        canvas: note.canvas,
+        collaborator: note.collaborator,
+        createdAt: note.createdAt,
+        remainder: note.remainder,
+      };
+    });
+    return res.status(200).json({ gottenNotes });
+  } catch (error) {
+    return res.status(404).json({ message: "Note with Id's not found" });
+  }
+});
+
+//Route to archive an array of notes
+router.post("/archive/selected-notes", async (req, res) => {
+  try {
+    const { arrayOfArchivedIds } = req.body;
+
+    //Find all the notes with those ids in the Note model first and assign it to findNotesInTheArray
+    const findNotesInTheArray = await Note.find({
+      _id: { $in: arrayOfArchivedIds },
+    });
+
+    //Next i map over it and create a new array of objects
+    const archivedNotesData = findNotesInTheArray.map((note) => {
+      return {
+        _id: note._id,
+        userId: note.userId,
+        title: note.title,
+        note: note.note,
+        picture: note.picture,
+        bgColor: note.bgColor,
+        bgImage: note.bgImage,
+        video: note.video,
+        location: note.location,
+        label: note.label,
+        labelId: note.labelId,
+        canvas: note.canvas,
+        collaborator: note.collaborator,
+        createdAt: note.createdAt,
+        remainder: note.remainder,
+      };
+    });
+
+    //Insert into Trash
+    await Archive.insertMany(archivedNotesData);
+    //Then i delete the notes from my Note
+    await Note.deleteMany({ _id: { $in: arrayOfArchivedIds } });
+
+    // await Note.deleteMany({ _id: { $in: arrayOfTrashIds } });
+
+    res.status(200).json({ message: "Selected notes trashed successfully" });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//Route to Pin an array of notes
+router.post("/pin/selected-notes", async (req, res) => {
+  try {
+    const { arrayOfPinnedIds } = req.body;
+    console.log(arrayOfPinnedIds, "pinnedIds");
+    //Find all the notes in the array first
+    const findNotesInTheArray = await Note.find({
+      _id: { $in: arrayOfPinnedIds },
+    });
+    console.log(findNotesInTheArray, "findNotesInTheArray");
+
+    //Next i map over it and create a new array of objects
+    const pinnedNotesData = findNotesInTheArray.map((note) => {
+      return {
+        _id: note._id,
+        userId: note.userId,
+        title: note.title,
+        note: note.note,
+        picture: note.picture,
+        bgColor: note.bgColor,
+        bgImage: note.bgImage,
+        video: note.video,
+        location: note.location,
+        label: note.label,
+        labelId: note.labelId,
+        canvas: note.canvas,
+        collaborator: note.collaborator,
+        createdAt: note.createdAt,
+        remainder: note.remainder,
+      };
+    });
+
+    console.log(pinnedNotesData);
+
+    //Insert into Trash
+    await Pinned.insertMany(pinnedNotesData);
+    //Then i delete the notes from my Note
+    // await Note.deleteMany({ _id: { $in: arrayOfPinnedIds } });
 
     // await Note.deleteMany({ _id: { $in: arrayOfTrashIds } });
 
