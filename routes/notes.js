@@ -986,7 +986,6 @@ router.post("/archive/selected-notes", async (req, res) => {
         remainder: note.remainder,
       };
     });
-
     //Insert into Trash
     await Archive.insertMany(archivedNotesData);
     //Then i delete the notes from my Note
@@ -1063,15 +1062,30 @@ router.post("/pin/selected-notes", async (req, res) => {
 router.post("/update/selected-bgcolor", async (req, res) => {
   try {
     const { arrayOfNoteIds, newBgColor } = req.body;
+    // Update the 'bgColor' field for each matching note
+    await Note.updateMany(
+      { _id: { $in: arrayOfNoteIds } },
+      { $set: { bgColor: newBgColor.bgColor, bgImage: newBgColor.bgImage } }
+    );
 
+    res.status(200).json({ message: "BgColor updated successfully" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.post("/update/selected-bgImage", async (req, res) => {
+  try {
+    const { arrayOfNoteIds, newBgImage } = req.body;
+    // console.log(newBgImage);
     // Update the 'bgColor' field for each matching note
     const result = await Note.updateMany(
       { _id: { $in: arrayOfNoteIds } },
-      { $set: { bgColor: newBgColor } }
+      { $set: { bgImage: newBgImage.bgImage, bgColor: newBgImage.bgColor } }
     );
 
-    console.log(result);
-
+    // console.log(result, "result");
     res.status(200).json({ message: "BgColor updated successfully" });
   } catch (err) {
     console.log(err);

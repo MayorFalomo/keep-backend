@@ -382,7 +382,7 @@ router.get("/getall-pinned-notes/:id", async (req, res) => {
 //Route to get a single Pinned note
 router.get("/pinned-id/:id", async (req, res) => {
   const id = req.params.id;
-
+  console.log(id);
   try {
     const pinned = await Pinned.findOne({ _id: id }).populate("note").exec();
 
@@ -390,7 +390,7 @@ router.get("/pinned-id/:id", async (req, res) => {
       return res.status(404).json({ message: "Unable to find Pinned Notes" });
     }
     // Access pinned.notes to get the populated 'Note' documents
-    // console.log(pinned.note);
+    console.log(pinned);
 
     // Send the populated pinned document as the response
     res.status(200).json(pinned);
