@@ -3,13 +3,12 @@ const app = express();
 const dotEnv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const bodyParser = require("body-parser");
 const noteRoutes = require("./routes/notes");
 const pinnedRoutes = require("./routes/pinned");
 const archivedRoutes = require("./routes/archive");
 const trashRoutes = require("./routes/Trash");
-// const labelRoutes = require("./routes/label");
 const userRoutes = require("./routes/users");
+const translate = require("./translate");
 
 dotEnv.config({ path: "./vars/.env" });
 app.use(express.json());
@@ -36,8 +35,8 @@ app.use("/api/notes", noteRoutes);
 app.use("/api/notes", pinnedRoutes);
 app.use("/api/notes", archivedRoutes);
 app.use("/api/notes", trashRoutes);
-// app.use("/api/notes", labelRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/notes", translate);
 
 app.listen("5000", () => {
   console.log("Server is running on port 5000");
