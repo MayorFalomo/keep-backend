@@ -1,6 +1,8 @@
 // import { Router } from "express";
 const router = require("express").Router();
 const User = require("../models/Users");
+var cron = require("node-cron");
+
 // const Note = require("../models/Post");
 
 //register a new user
@@ -114,6 +116,16 @@ router.get("/getall-users/", async (req, res) => {
     res.status(200).json(users);
   } catch (err) {
     console.log(err);
+  }
+});
+
+//CRON job clears Notifications [] everyday
+cron.schedule("0 0 * * *", async () => {
+  try {
+    const result = await User.updateMany({}, { $set: { notifications: [] } });
+    console.log("Trash deleted successfully:", result);
+  } catch (error) {
+    console.error("Error deleting notes:", error);
   }
 });
 

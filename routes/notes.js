@@ -53,11 +53,11 @@ router.get("/get-note/:id", async (req, res) => {
 //Send note to another user or  or collaborate with another user
 router.post("/send-note", async (req, res) => {
   const {
-    _id,
+    _id, // id of note
     userId,
-    generatedId,
-    username,
-    collabUsername,
+    generatedId, // generated is the new id
+    username, // owner of the note now
+    // collabUsername,
     title,
     note,
     picture,
@@ -68,25 +68,31 @@ router.post("/send-note", async (req, res) => {
     location,
     label,
     labelId,
-    collaborator,
+    collaborator, // past note owner
     createdAt,
   } = req.body;
 
   try {
+    //Find the user who we sent the note to
     const toUser = await User.findOne({
-      username, // collabUsername is the username of the user we 're sending to and finding
+      userId, // collabUsername is the username of the user we 're sending to and finding
     });
+
+    // console.log(toUser, "found");
 
     await Note.findByIdAndUpdate(_id, {
-      $push: { collaborator: collabUsername },
+      $push: { collaborator: collaborator },
     });
 
+    if (!toUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
     //Then i create & send the new note with the new collaborator
     const newNote = new Note({
       _id: generatedId, //generated Id so the note is new
-      userId: toUser?._id, //The current user's Id
+      userId: userId, //The user Id of the person we're sending to, since it's based off this the note is associated with the user
       username,
-      email: toUser?.email,
+      // email: toUser?.email,
       title,
       note,
       picture,
@@ -101,12 +107,7 @@ router.post("/send-note", async (req, res) => {
       createdAt,
     });
     await newNote.save();
-
-    res.json({ message: "Note sent successfully" });
-
-    if (!toUser) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    return res.status(200).json({ message: "Note sent successfully" });
   } catch (error) {
     res.status(500).json({ error: "wtf is Internal Error" });
   }

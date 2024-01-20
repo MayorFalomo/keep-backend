@@ -15,6 +15,7 @@ router.post("/trash-note", async (req, res) => {
       title: req.body.title,
       note: req.body.note,
       picture: req.body.picture,
+      video: req.body.video,
       canvas: req.body.canvas,
       bgImage: req.body.bgImage,
       bgColor: req.body.bgColor,
