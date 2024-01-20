@@ -8,8 +8,8 @@ const router = require("express").Router();
 const { Translate } = require("@google-cloud/translate").v2;
 
 const translationApi = new Translate({
-  projectId: process.env.PROJECT_ID,
-  key: process.env.API_KEY,
+  projectId: "118164317804619501465",
+  key: "AIzaSyD46Q1ZkncT2EV0ot3phnecttkQwgo1kKM",
 });
 
 //Function to translate note
