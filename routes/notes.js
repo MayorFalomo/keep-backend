@@ -58,16 +58,16 @@ router.post("/send-note", async (req, res) => {
     generatedId,
     username,
     collabUsername,
-    email,
     title,
     note,
     picture,
+    video,
     bgColor,
     bgImage,
-    drawing,
     canvas,
     location,
-    labels,
+    label,
+    labelId,
     collaborator,
     createdAt,
   } = req.body;
@@ -90,11 +90,12 @@ router.post("/send-note", async (req, res) => {
       title,
       note,
       picture,
+      video,
       bgColor,
       bgImage,
-      drawing,
       location,
-      labels,
+      label,
+      labelId,
       canvas,
       collaborator: collaborator,
       createdAt,
@@ -155,11 +156,12 @@ router.post("/set-notification/later-today", async (req, res) => {
     title,
     note,
     picture,
+    video,
     bgColor,
     bgImage,
-    drawing,
     location,
     label,
+    labelId,
     canvas,
     collaborator,
     createdAt,
@@ -191,15 +193,22 @@ router.post("/set-notification/later-today", async (req, res) => {
       title,
       note,
       picture,
+      video,
       bgColor,
       bgImage,
       location,
-      drawing,
       label,
+      labelId,
       canvas,
       collaborator,
       createdAt,
     };
+    //Push note to pending array
+    await User.findOneAndUpdate(
+      { userId: userId },
+      { $push: { pending: notification } },
+      { new: true }
+    );
     //setTimeOut to run the function at 8am
     setTimeout(async (req, res) => {
       try {
@@ -220,7 +229,11 @@ router.post("/set-notification/later-today", async (req, res) => {
         console.error("Error sending notification:", error);
       }
     }, timeUntil8AM);
-
+    //Push note to pending array
+    await User.findOneAndUpdate(
+      { userId: userId },
+      { $push: { pending: notification._id } }
+    );
     return res
       .status(200)
       .json({ message: "Notification scheduled successfully" });
@@ -243,8 +256,8 @@ router.post("/set-notification/tomorrow", async (req, res) => {
     bgColor,
     bgImage,
     location,
-    drawing,
     label,
+    labelId,
     canvas,
     collaborator,
     createdAt,
@@ -257,9 +270,10 @@ router.post("/set-notification/tomorrow", async (req, res) => {
     const targetTime = new Date(now);
     targetTime.setHours(8, 0, 0, 0); // Set time to 8 AM tomorrow
 
-    // If the current time is after 8 AM, schedule it for 8 AM tomorrow
+    //So we setDate by getting the present date and adding 1 to it
     targetTime.setDate(now.getDate() + 1);
 
+    //The tomorrow would then be the targetTime we set subtracted from the current time in mill, Then we get our long till tomorrow
     const tomorrow = targetTime.getTime() - now.getTime();
     console.log(tomorrow, "this is tomorrow");
 
@@ -269,6 +283,7 @@ router.post("/set-notification/tomorrow", async (req, res) => {
     // The notification object with the message and userDetails
     const notification = {
       message: notificationMessage,
+      timeLeft: tomorrow,
       _id,
       userId,
       username,
@@ -278,15 +293,22 @@ router.post("/set-notification/tomorrow", async (req, res) => {
       video,
       bgColor,
       bgImage,
-      drawing,
       location,
       label,
+      labelId,
       remainder,
       canvas,
       collaborator,
       createdAt,
     };
-    //setTimeOut to run the function at 8am
+    //Push note to pending array
+    await User.findOneAndUpdate(
+      { userId: userId },
+      { $push: { pending: notification } },
+      { new: true }
+    );
+
+    //setTimeOut to run the function at the time calculated, tomorrow
     setTimeout(async (req, res) => {
       try {
         // Find the user and push the notification object into their notifications array
@@ -295,18 +317,23 @@ router.post("/set-notification/tomorrow", async (req, res) => {
           { $push: { notifications: notification } },
           { new: true } // To get the updated user document
         );
-        console.log(user, "new user");
+        // console.log(user, "new user");
         if (!user) {
           return res.status(404).json({
             message: "Notification with the provided ID already exists",
           });
         }
-        console.log("Notification sent:", notification);
+        // console.log("Notification sent:", notification);
       } catch (error) {
         console.error("Error sending notification:", error);
       }
     }, tomorrow);
 
+    //remove the note from the pending array
+    await User.findOneAndUpdate(
+      { userId: userId },
+      { $pull: { pending: notification._id } }
+    );
     return res
       .status(200)
       .json({ message: "Notification scheduled successfully" });
@@ -330,6 +357,7 @@ router.post("/set-notification/next-week", async (req, res) => {
     bgImage,
     location,
     label,
+    labelId,
     canvas,
     collaborator,
     createdAt,
@@ -352,6 +380,7 @@ router.post("/set-notification/next-week", async (req, res) => {
     // The notification object with the message and userDetails
     const notification = {
       message: notificationMessage,
+      timeLeft: timeUntilNextMonday8AM,
       _id,
       userId,
       username,
@@ -363,18 +392,25 @@ router.post("/set-notification/next-week", async (req, res) => {
       bgImage,
       location,
       label,
+      labelId,
       canvas,
       collaborator,
       createdAt,
     };
+    //Push note to pending array
+    await User.findOneAndUpdate(
+      { userId: userId },
+      { $push: { pending: notification } },
+      { new: true }
+    );
+
     //setTimeOut to run the function at 8am
     setTimeout(async (req, res) => {
       try {
         // Find the user and push the notification object into their notifications array
         const user = await User.findOneAndUpdate(
-          { _id: userId },
-          { $push: { notifications: notification } },
-          { new: true } // To get the updated user document
+          { userId: userId },
+          { $push: { notifications: notification } }
         );
         // console.log(user);
         if (!user) {
@@ -389,6 +425,11 @@ router.post("/set-notification/next-week", async (req, res) => {
       }
     }, timeUntilNextMonday8AM);
 
+    //Push note to pending array
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { pending: notification._id } }
+    );
     return res
       .status(200)
       .json({ message: "Notification scheduled successfully" });
@@ -458,6 +499,13 @@ router.post("/set-notification/pick-a-time", async (req, res) => {
       createdAt,
     };
 
+    //Push note to pending array
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { $push: { pending: notification } },
+      { new: true }
+    );
+
     // Set the timeout to send the notification at the specified time
     setTimeout(async (req, res) => {
       try {
@@ -478,6 +526,12 @@ router.post("/set-notification/pick-a-time", async (req, res) => {
         console.error("Error sending notification:", error);
       }
     }, timeUntilNotification);
+
+    //Push note to pending array
+    await User.findOneAndUpdate(
+      { userId: userId },
+      { $pull: { pending: notification._id } }
+    );
 
     return res
       .status(200)
@@ -1093,19 +1147,6 @@ router.post("/update/selected-bgImage", async (req, res) => {
   }
 });
 
-//Route to save canvas
-// router.post("/create-note-with-canvas", async (req, res) => {
-//   const newNote = new Note(req.body);
-//   try {
-//     const savedNote = await newNote.save();
-//     console.log(savedNote, "Saved Note");
-//     res.status(200).json(savedNote);
-
-//     return res.status(200).json({ message: "Canvas note saved successfully" });
-//   } catch (err) {
-//     res.status(500).json(err);
-//   }
-// });
 // Update all documents to include the new field
 // Note.updateMany({}, { $set: { label: "" } })
 //   .then((result) => {

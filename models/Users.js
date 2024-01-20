@@ -29,9 +29,13 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    pending: {
+      type: [],
+      required: false,
+    },
     notifications: {
       type: Array,
-      required: true,
+      required: false,
     },
   },
   { timestamps: true }
